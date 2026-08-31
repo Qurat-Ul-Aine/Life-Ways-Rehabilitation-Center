@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "patients"
+ADD COLUMN IF NOT EXISTS "profile_image_url" TEXT,
+ADD COLUMN IF NOT EXISTS "about_me" TEXT,
+ADD COLUMN IF NOT EXISTS "allergies" TEXT,
+ADD COLUMN IF NOT EXISTS "blood_group" VARCHAR(10);

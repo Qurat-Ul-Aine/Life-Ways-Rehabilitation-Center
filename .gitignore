@@ -1,0 +1,62 @@
+# =========================
+# Dependencies
+# =========================
+node_modules/
+**/node_modules/
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Build output
+# =========================
+dist/
+build/
+**/dist/
+**/build/
+
+# =========================
+# Generated files
+# =========================
+backend/generated/
+**/generated/
+
+# =========================
+# User uploads / temporary files
+# =========================
+backend/uploads/
+**/uploads/
+
+backend/tmp/
+**/tmp/
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Editor files
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Test / coverage
+# =========================
+coverage/
+.nyc_output/

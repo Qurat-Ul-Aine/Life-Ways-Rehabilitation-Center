@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Healthcare design tokens (Light + Dark) ─────────────────────────────── */
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    --background: 210 25% 98%;
+    --foreground: 215 28% 17%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 28% 17%;
+
+    --primary: 168 45% 32%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 22% 94%;
+    --secondary-foreground: 215 25% 20%;
+
+    --muted: 210 18% 95%;
+    --muted-foreground: 215 12% 42%;
+
+    --accent: 195 38% 36%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 45% 34%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 75% 42%;
+    --warning-foreground: 215 28% 12%;
+
+    --info: 205 65% 40%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 214 18% 88%;
+    --input: 214 18% 88%;
+    --ring: 168 45% 32%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 210 25% 97%;
+    --sidebar-foreground: 215 22% 22%;
+    --sidebar-primary: 168 45% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 93%;
+    --sidebar-accent-foreground: 215 25% 18%;
+    --sidebar-border: 214 16% 86%;
+    --sidebar-ring: 168 45% 32%;
+
+    --heading: 215 30% 14%;
+    --hero-gradient: linear-gradient(135deg, hsl(168 45% 32%), hsl(195 42% 30%));
+    --card-shadow: 0 4px 24px -4px hsl(215 28% 17% / 0.08);
+    --card-shadow-hover: 0 8px 32px -4px hsl(215 28% 17% / 0.12);
+    --section-alt: 168 22% 96%;
+    --overlay: 215 30% 14%;
+    --chart-grid: 214 18% 88%;
+    --chart-axis: 215 12% 42%;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    --background: 215 22% 11%;
+    --foreground: 210 18% 92%;
+
+    --card: 215 20% 14%;
+    --card-foreground: 210 18% 92%;
+
+    --popover: 215 20% 14%;
+    --popover-foreground: 210 18% 92%;
+
+    --primary: 168 38% 44%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 16% 18%;
+    --secondary-foreground: 210 16% 88%;
+
+    --muted: 215 14% 17%;
+    --muted-foreground: 210 10% 68%;
+
+    --accent: 195 32% 42%;
+    --accent-foreground: 210 18% 96%;
+
+    --destructive: 0 55% 48%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 38% 42%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 65% 50%;
+    --warning-foreground: 215 28% 12%;
+
+    --info: 205 55% 52%;
+    --info-foreground: 215 28% 12%;
+
+    --border: 215 14% 22%;
+    --input: 215 14% 22%;
+    --ring: 168 38% 44%;
+
+    --sidebar-background: 215 22% 10%;
+    --sidebar-foreground: 210 14% 88%;
+    --sidebar-primary: 168 38% 44%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 16% 16%;
+    --sidebar-accent-foreground: 210 16% 90%;
+    --sidebar-border: 215 14% 20%;
+    --sidebar-ring: 168 38% 44%;
+
+    --heading: 210 18% 95%;
+    --hero-gradient: linear-gradient(135deg, hsl(168 38% 36%), hsl(195 35% 30%));
+    --card-shadow: 0 4px 24px -4px hsl(0 0% 0% / 0.35);
+    --card-shadow-hover: 0 8px 32px -4px hsl(0 0% 0% / 0.45);
+    --section-alt: 215 18% 13%;
+    --overlay: 215 22% 8%;
+    --chart-grid: 215 14% 22%;
+    --chart-axis: 210 10% 68%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  html,
+  body,
+  #root {
+    @apply h-full;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading text-heading;
+  }
+}
+
+@layer utilities {
+  .text-heading {
+    color: hsl(var(--heading));
+  }
+
+  .bg-section-alt {
+    background-color: hsl(var(--section-alt));
+  }
+
+  .bg-overlay {
+    background-color: hsl(var(--overlay) / 0.72);
+  }
+
+  .shadow-card {
+    box-shadow: var(--card-shadow);
+  }
+
+  .shadow-card-hover {
+    box-shadow: var(--card-shadow-hover);
+  }
+
+  .bg-hero-gradient {
+    background: var(--hero-gradient);
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

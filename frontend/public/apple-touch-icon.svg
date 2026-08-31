@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Life Ways Rehabilitation Center">
+  <defs>
+    <linearGradient id="lw-gradient" x1="24" y1="16" x2="156" y2="164" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2D8A72"/>
+      <stop offset="1" stop-color="#256878"/>
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="40" fill="url(#lw-gradient)"/>
+  <path
+    fill="#ffffff"
+    d="M90 137.2c-.85 0-1.68-.28-2.36-.78-27-20.5-39.8-33.5-39.8-49.9 0-13.2 10.7-23.9 23.9-23.9 8.7 0 16.6 4.6 21.1 11.5 4.5-6.9 12.4-11.5 21.1-11.5 13.2 0 23.9 10.7 23.9 23.9 0 16.4-12.8 29.4-39.8 49.9-.68.5-1.51.78-2.36.78z"
+  />
+  <path
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="M42 91.2h11.8l7.6-12.9 8.2 23.6 8.7-15.5 8.7 15.5H138"
+  />
+</svg>

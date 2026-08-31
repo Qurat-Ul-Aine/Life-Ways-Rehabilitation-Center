@@ -1,0 +1,15 @@
+export const TOPBAR: Record<string, string> = {
+  home:         "My Health",
+  appointments: "My Appointments",
+  recovery:     "Recovery Progress",
+  therapy:      "Therapy Plan",
+  screening:        "Screening Results",
+  "ai-recommendations": "AI Recommendations",
+  recommendations:      "Find a Doctor",
+  medications:  "Medications",
+  messages:     "Messages",
+  notifications: "Notifications",
+  profile:      "My Profile",
+  settings:     "Settings",
+  reports:      "My Reports",
+};
