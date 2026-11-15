@@ -29,40 +29,40 @@ export default function ScreeningIntroPage() {
 
   return (
     <ScreeningLayout step={SCREENING_FLOW_STEPS.intro} totalSteps={SCREENING_FLOW_STEPS.total} title={config.title}>
-      <p className="text-slate-300">{config.subtitle}</p>
+      <p className="text-muted-foreground">{config.subtitle}</p>
 
-      <Card className="border-slate-800 bg-slate-900">
+      <Card className="border-border bg-card shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-base text-white">
+          <CardTitle className="flex items-center gap-2 text-base text-foreground">
             <Shield className="h-4 w-4 text-primary" />
             Purpose of Screening
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-slate-300">{config.purpose}</CardContent>
+        <CardContent className="text-sm text-muted-foreground">{config.purpose}</CardContent>
       </Card>
 
-      <ul className="list-disc space-y-2 pl-6 text-slate-300">
+      <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
         {config.bulletPoints.map((item) => (
           <li key={item}>{item}</li>
         ))}
       </ul>
 
-      <Card className="border-slate-800 bg-slate-900">
+      <Card className="border-border bg-card shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-base text-white">
+          <CardTitle className="flex items-center gap-2 text-base text-foreground">
             <Lock className="h-4 w-4 text-primary" />
             Confidentiality
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-slate-300">{config.confidentialityNote}</CardContent>
+        <CardContent className="text-sm text-muted-foreground">{config.confidentialityNote}</CardContent>
       </Card>
 
-      <Card className="border-slate-800 bg-slate-900">
+      <Card className="border-border bg-card shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base text-white">Instructions</CardTitle>
+          <CardTitle className="text-base text-foreground">Instructions</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="list-decimal space-y-2 pl-5 text-sm text-slate-300">
+          <ul className="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
             {config.instructions.map((item) => (
               <li key={item}>{item}</li>
             ))}
@@ -72,22 +72,22 @@ export default function ScreeningIntroPage() {
 
       <div className="grid gap-4 md:grid-cols-3">
         {config.stats.map((stat) => (
-          <Card key={stat.label} className="border-slate-800 bg-slate-900">
+          <Card key={stat.label} className="border-border bg-card shadow-sm">
             <CardContent className="p-6 text-center">
               <p className="text-2xl font-bold text-primary">{stat.value}</p>
-              <p className="mt-2 text-sm text-slate-400">{stat.label}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card className="border-amber-900/50 bg-amber-950/30">
+      <Card className="border-warning/50 bg-warning/10">
         <CardContent className="flex gap-3 p-4">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
-          <div className="space-y-1 text-sm text-amber-100/90">
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+          <div className="space-y-1 text-sm text-foreground">
             <p className="font-medium">Disclaimer</p>
-            <p>{config.disclaimer}</p>
-            <p className="flex items-center gap-2 text-slate-400">
+            <p className="text-muted-foreground">{config.disclaimer}</p>
+            <p className="flex items-center gap-2 text-muted-foreground">
               <Clock className="h-4 w-4" /> Estimated duration: {config.estimatedMinutes}
             </p>
           </div>

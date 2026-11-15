@@ -7,8 +7,8 @@ export default function RecommendationCard({ recommendations }: Props) {
 
   return (
     <div>
-      <h3 className="mb-2 font-semibold text-white">Recommended Actions</h3>
-      <ul className="space-y-2 text-sm text-slate-300">
+      <h3 className="mb-2 font-semibold text-foreground">Recommended Actions</h3>
+      <ul className="space-y-2 text-sm text-muted-foreground">
         {recommendations.map((rec) => (
           <li key={rec} className="flex gap-2">
             <span className="text-primary">•</span>

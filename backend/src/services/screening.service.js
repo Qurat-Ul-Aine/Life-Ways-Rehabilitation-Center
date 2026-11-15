@@ -322,7 +322,8 @@ async function submitScreening(payload, userContext = null) {
 
   const gender = payload.gender ? String(payload.gender).trim() : null;
 
-  const record = await prisma.$transaction(async (tx) => {
+  let screeningId;
+  await prisma.$transaction(async (tx) => {
     const screening = await tx.screening_tests.create({
       data: {
         patient_id: patient_id ? String(patient_id) : null,
@@ -341,6 +342,8 @@ async function submitScreening(payload, userContext = null) {
       },
     });
 
+    screeningId = screening.id;
+
     for (const ans of scoredAnswers) {
       await tx.screening_answers.create({
         data: {
@@ -351,14 +354,14 @@ async function submitScreening(payload, userContext = null) {
         },
       });
     }
+  });
 
-    return tx.screening_tests.findUnique({
-      where: { id: screening.id },
-      include: {
-        conditions: true,
-        answers: { include: { questions: true } },
-      },
-    });
+  const record = await prisma.screening_tests.findUnique({
+    where: { id: screeningId },
+    include: {
+      conditions: true,
+      answers: { include: { questions: true } },
+    },
   });
 
   if (risk_level === "HIGH") {
@@ -455,8 +458,8 @@ function buildAdminListWhere(filters = {}) {
   if (filters.condition) {
     where.AND.push({
       OR: [
-        { test_type: { equals: String(filters.condition).toLowerCase(), mode: "insensitive" } },
-        { conditions: { slug: { equals: String(filters.condition).toLowerCase(), mode: "insensitive" } } },
+        { test_type: { equals: String(filters.condition).toLowerCase() } },
+        { conditions: { slug: { equals: String(filters.condition).toLowerCase() } } },
       ],
     });
   }
@@ -471,9 +474,9 @@ function buildAdminListWhere(filters = {}) {
     const s = String(filters.search).trim();
     where.AND.push({
       OR: [
-        { test_type: { contains: s, mode: "insensitive" } },
-        { patients: { users: { name: { contains: s, mode: "insensitive" } } } },
-        { patients: { users: { email: { contains: s, mode: "insensitive" } } } },
+        { test_type: { contains: s } },
+        { patients: { users: { name: { contains: s } } } },
+        { patients: { users: { email: { contains: s } } } },
       ],
     });
   }

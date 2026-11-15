@@ -108,11 +108,11 @@ async function list(req, res) {
 
     if (req.query.search) {
       where.OR = [
-        { users: { name: { contains: req.query.search, mode: "insensitive" } } },
-        { users: { email: { contains: req.query.search, mode: "insensitive" } } },
-        { department: { contains: req.query.search, mode: "insensitive" } },
-        { position: { contains: req.query.search, mode: "insensitive" } },
-        { staff_role: { contains: req.query.search, mode: "insensitive" } },
+        { users: { name: { contains: req.query.search } } },
+        { users: { email: { contains: req.query.search } } },
+        { department: { contains: req.query.search } },
+        { position: { contains: req.query.search } },
+        { staff_role: { contains: req.query.search } },
       ];
     }
 

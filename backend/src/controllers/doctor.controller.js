@@ -711,15 +711,14 @@ async function list(req, res) {
     if (req.query.specialization) {
       where.specialization = {
         contains: req.query.specialization,
-        mode: "insensitive",
       };
     }
 
     if (req.query.search) {
       where.OR = [
-        { specialization: { contains: req.query.search, mode: "insensitive" } },
-        { users: { name: { contains: req.query.search, mode: "insensitive" } } },
-        { users: { email: { contains: req.query.search, mode: "insensitive" } } },
+        { specialization: { contains: req.query.search } },
+        { users: { name: { contains: req.query.search } } },
+        { users: { email: { contains: req.query.search } } },
       ];
     }
 

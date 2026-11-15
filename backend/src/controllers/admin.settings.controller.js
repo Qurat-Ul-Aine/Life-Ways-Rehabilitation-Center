@@ -108,9 +108,9 @@ async function updateSystemRowRaw(data) {
 
 const HOSPITAL_DEFAULTS = {
   hospital_name: "Life Ways Rehabilitation Center",
-  contact_email: "lifewaysrehabilitationcenter@gmail.com",
-  contact_phone: "+92 314 979 3177",
-  address: "Ghouri Town, Phase 7, Islamabad",
+  contact_email: "info@lifewaysrehab.com",
+  contact_phone: "+92 51 234 5678",
+  address: "123 Medical Complex, Blue Area, Islamabad, Pakistan",
 };
 
 function mapHospital(row) {

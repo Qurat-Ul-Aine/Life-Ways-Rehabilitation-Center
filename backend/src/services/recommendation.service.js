@@ -1752,7 +1752,7 @@ function buildAdminLogsWhere({
   if (search) {
     where.patients = {
       users: {
-        name: { contains: String(search), mode: "insensitive" },
+        name: { contains: String(search) },
       },
     };
   }

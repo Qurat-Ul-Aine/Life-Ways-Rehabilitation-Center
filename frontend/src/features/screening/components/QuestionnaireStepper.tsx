@@ -20,7 +20,7 @@ export default function QuestionnaireStepper({
   return (
     <>
       <ProgressBar answered={answered} total={total} percent={percent} />
-      <p className="text-sm text-slate-400">
+      <p className="text-sm text-muted-foreground">
         Section {sectionIndex + 1} of {sectionCount}: {sectionTitle}
       </p>
     </>

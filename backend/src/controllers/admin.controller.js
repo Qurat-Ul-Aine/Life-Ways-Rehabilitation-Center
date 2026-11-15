@@ -296,7 +296,7 @@ async function globalSearch(req, res) {
       });
     }
 
-    const contains = { contains: q, mode: "insensitive" };
+    const contains = { contains: q };
 
     const [patients, doctors, staff, appointments] = await Promise.all([
       prisma.patients.findMany({

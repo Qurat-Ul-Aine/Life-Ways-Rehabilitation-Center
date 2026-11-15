@@ -51,15 +51,15 @@ export default function ConditionSelectionPage() {
       totalSteps={SCREENING_FLOW_STEPS.total}
       title="Select a Condition"
     >
-      <p className="text-slate-400">
+      <p className="text-muted-foreground">
         Choose one area to assess. You can go back and change your selection before answering
         questions.
       </p>
 
       {loading ? (
         <div className="space-y-3">
-          <Skeleton className="h-24 bg-slate-800" />
-          <Skeleton className="h-24 bg-slate-800" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
         </div>
       ) : (
         <div className="grid gap-3 md:grid-cols-2">

@@ -8,9 +8,9 @@ type Props = {
 
 export default function EmptyState({ message, children }: Props) {
   return (
-    <Card className="border-dashed border-slate-800 bg-slate-900 p-6 text-center">
+    <Card className="border-dashed border-border bg-card shadow-sm p-6 text-center">
       <CardContent className="p-0">
-        <p className="text-sm text-slate-400">{message}</p>
+        <p className="text-sm text-muted-foreground">{message}</p>
         {children}
       </CardContent>
     </Card>

@@ -474,7 +474,7 @@ async function resolvePatientForUser(user) {
 
   return prisma.patients.findFirst({
     where: {
-      users: { email: { equals: user.email, mode: "insensitive" } },
+      users: { email: { equals: user.email } },
     },
     include: PATIENT_INCLUDE,
   });
@@ -505,8 +505,8 @@ async function list(req, res) {
     if (req.query.search) {
       where.users = {
         OR: [
-          { name: { contains: req.query.search, mode: "insensitive" } },
-          { email: { contains: req.query.search, mode: "insensitive" } },
+          { name: { contains: req.query.search } },
+          { email: { contains: req.query.search } },
         ],
       };
     }
@@ -1433,9 +1433,9 @@ async function getRecoverySummary(req, res) {
           appointment_date: { gte: today },
           status: { notIn: ["CANCELLED", "COMPLETED"] },
           OR: [
-            { reason: { contains: "assessment", mode: "insensitive" } },
-            { reason: { contains: "screening", mode: "insensitive" } },
-            { reason: { contains: "evaluation", mode: "insensitive" } },
+            { reason: { contains: "assessment" } },
+            { reason: { contains: "screening" } },
+            { reason: { contains: "evaluation" } },
           ],
         },
         orderBy: [{ appointment_date: "asc" }, { appointment_time: "asc" }],

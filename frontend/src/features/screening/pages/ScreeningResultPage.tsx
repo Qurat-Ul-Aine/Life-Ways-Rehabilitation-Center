@@ -56,8 +56,8 @@ export default function ScreeningResultPage() {
         <Card className="border-primary/30 bg-primary/5">
           <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1 text-sm">
-              <p className="font-medium text-white">Save your screening history</p>
-              <p className="text-slate-400">
+              <p className="font-medium text-foreground">Save your screening history</p>
+              <p className="text-muted-foreground">
                 Create a free account to store results and view them anytime from your patient
                 dashboard.
               </p>
@@ -72,16 +72,16 @@ export default function ScreeningResultPage() {
         </Card>
       ) : null}
 
-      <Card className="border-slate-800 bg-slate-900">
+      <Card className="border-border bg-card shadow-sm">
         <CardHeader>
-          <CardTitle className="text-white">{result.title ?? "Assessment Summary"}</CardTitle>
-          {advice ? <CardDescription className="text-slate-300">{advice}</CardDescription> : null}
+          <CardTitle className="text-foreground">{result.title ?? "Assessment Summary"}</CardTitle>
+          {advice ? <CardDescription className="text-muted-foreground">{advice}</CardDescription> : null}
         </CardHeader>
         <CardContent className="space-y-4">
           {result.explanation ? (
             <div>
-              <h3 className="mb-1 text-sm font-semibold text-white">Explanation</h3>
-              <p className="text-sm text-slate-400">{result.explanation}</p>
+              <h3 className="mb-1 text-sm font-semibold text-foreground">Explanation</h3>
+              <p className="text-sm text-muted-foreground">{result.explanation}</p>
             </div>
           ) : null}
           <RecommendationCard recommendations={result.recommendations} />
@@ -93,8 +93,8 @@ export default function ScreeningResultPage() {
           <CardContent className="flex gap-3 p-4">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
             <div className="space-y-1 text-sm">
-              <p className="font-semibold text-white">Emergency & urgent support</p>
-              <p className="text-slate-300">
+              <p className="font-semibold text-foreground">Emergency & urgent support</p>
+              <p className="text-muted-foreground">
                 If you or someone else is in immediate danger, contact emergency services or a
                 crisis line right away.
               </p>
@@ -109,8 +109,8 @@ export default function ScreeningResultPage() {
       ) : null}
 
       {isLowRisk ? (
-        <Card className="border-slate-800 bg-slate-900">
-          <CardContent className="flex gap-3 p-4 text-sm text-slate-300">
+        <Card className="border-border bg-card shadow-sm">
+          <CardContent className="flex gap-3 p-4 text-sm text-muted-foreground">
             <ClipboardList className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
             <p>
               Continue monitoring your symptoms over the coming weeks. Repeat this assessment if
@@ -120,7 +120,7 @@ export default function ScreeningResultPage() {
         </Card>
       ) : null}
 
-      <p className="text-center text-xs text-slate-500">
+      <p className="text-center text-xs text-muted-foreground">
         This screening is not a medical diagnosis. Please consult a healthcare professional.
       </p>
 
@@ -128,19 +128,19 @@ export default function ScreeningResultPage() {
         <Button type="button" variant="default" onClick={bookAppointment}>
           <Calendar className="mr-2 h-4 w-4" /> Book Appointment
         </Button>
-        <Button asChild variant="outline" className="border-slate-700">
+        <Button asChild variant="outline">
           <Link to="/doctors">
             <Stethoscope className="mr-2 h-4 w-4" /> Talk to Doctor
           </Link>
         </Button>
-        <Button asChild variant="outline" className="border-slate-700">
+        <Button asChild variant="outline">
           <Link to={{ pathname: "/", hash: "contact" }}>
             <Phone className="mr-2 h-4 w-4" /> Get Support
           </Link>
         </Button>
         <Button
           variant="ghost"
-          className="border border-slate-800 text-slate-300 sm:col-span-2 lg:col-span-3"
+          className="border border-border text-muted-foreground sm:col-span-2 lg:col-span-3"
           onClick={() => navigate(SCREENING_ROUTES.intro)}
         >
           <RefreshCw className="mr-2 h-4 w-4" /> Follow-up Assessment

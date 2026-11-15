@@ -5,9 +5,9 @@ import type { HospitalSettings } from "@/features/admin/types/admin-settings.typ
 export const DEFAULT_HOSPITAL: HospitalSettings = {
   hospitalName: "Life Ways Rehabilitation Center",
   logoUrl: null,
-  contactEmail: "lifewaysrehabilitationcenter@gmail.com",
-  contactPhone: "+92 314 979 3177",
-  address: "Ghouri Town, Phase 7, Islamabad",
+  contactEmail: "info@lifewaysrehab.com",
+  contactPhone: "+92 51 234 5678",
+  address: "123 Medical Complex, Blue Area, Islamabad, Pakistan",
   updatedAt: null,
 };
 

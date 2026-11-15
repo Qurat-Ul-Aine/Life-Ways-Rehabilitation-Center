@@ -48,13 +48,13 @@ export default function BasicInfoPage() {
       totalSteps={SCREENING_FLOW_STEPS.total}
       title={forOther ? "About the Person Being Assessed" : "About You"}
     >
-      <p className="text-sm text-slate-400">
+      <p className="text-sm text-muted-foreground">
         {forOther
           ? "Provide basic demographic information for the person you are screening."
           : "Provide basic demographic information to help contextualize your screening results."}
       </p>
 
-      <Card className="border-slate-800 bg-slate-900">
+      <Card className="border-border bg-card shadow-sm">
         <CardContent className="space-y-6 p-6">
           <div className="space-y-2">
             <Label htmlFor="age">{forOther ? "Their age *" : "Your age *"}</Label>
@@ -66,13 +66,12 @@ export default function BasicInfoPage() {
               value={age}
               onChange={(e) => setAge(e.target.value)}
               placeholder="Enter age"
-              className="border-slate-700 bg-slate-950"
             />
           </div>
           <div className="space-y-2">
             <Label>{forOther ? "Their gender *" : "Your gender *"}</Label>
             <Select value={gender} onValueChange={setGender}>
-              <SelectTrigger className="border-slate-700 bg-slate-950">
+              <SelectTrigger>
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
               <SelectContent>

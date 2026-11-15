@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useHospitalSettings } from "@/features/admin/context/HospitalSettingsContext";
 import { AdminProfileProvider } from "@/features/admin/context/AdminProfileContext";
 import { resolveUploadUrl } from "@/lib/mediaUrl";
+import { HospitalContactDisplay } from "@/features/admin/components/HospitalContactDisplay";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -97,6 +98,10 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
           <main className="flex-1 p-4 transition-opacity duration-200 lg:p-6">
             {children}
           </main>
+
+          <div className="border-t border-border bg-card p-4 lg:p-6">
+            <HospitalContactDisplay layout="grid" />
+          </div>
         </div>
       </div>
     </div>

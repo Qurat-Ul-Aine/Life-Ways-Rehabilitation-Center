@@ -97,7 +97,7 @@ async function listInterns({
     }
   }
 
-  if (department) where.department = { equals: String(department), mode: "insensitive" };
+  if (department) where.department = { equals: String(department) };
   if (mentorId) where.mentor_id = String(mentorId);
   if (dateFrom || dateTo) {
     where.internship_start = {};
@@ -107,9 +107,9 @@ async function listInterns({
 
   if (search) {
     where.OR = [
-      { users: { name: { contains: search, mode: "insensitive" } } },
-      { users: { email: { contains: search, mode: "insensitive" } } },
-      { department: { contains: search, mode: "insensitive" } },
+      { users: { name: { contains: search } } },
+      { users: { email: { contains: search } } },
+      { department: { contains: search } },
       { users: { user_phones: { some: { phone: { contains: search } } } } },
     ];
   }

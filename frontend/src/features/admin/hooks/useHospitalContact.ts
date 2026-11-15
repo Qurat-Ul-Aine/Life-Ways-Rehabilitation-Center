@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import defaultLogo from "@/assets/logo.png";
 import { resolveUploadUrl } from "@/lib/mediaUrl";
-import { useHospitalSettings } from "@/features/admin/context/HospitalSettingsContext";
+import { useHospitalSettings, DEFAULT_HOSPITAL } from "@/features/admin/context/HospitalSettingsContext";
 
 export function toPhoneHref(phone?: string | null): string | undefined {
   if (!phone?.trim()) return undefined;
@@ -19,13 +19,13 @@ export function useHospitalContact() {
 
   return useMemo(
     () => ({
-      hospitalName: hospital.hospitalName,
-      address: hospital.address,
-      contactEmail: hospital.contactEmail,
-      contactPhone: hospital.contactPhone,
+      hospitalName: hospital.hospitalName || DEFAULT_HOSPITAL.hospitalName,
+      address: hospital.address || DEFAULT_HOSPITAL.address,
+      contactEmail: hospital.contactEmail || DEFAULT_HOSPITAL.contactEmail,
+      contactPhone: hospital.contactPhone || DEFAULT_HOSPITAL.contactPhone,
       logoUrl: resolveUploadUrl(hospital.logoUrl) ?? defaultLogo,
-      phoneHref: toPhoneHref(hospital.contactPhone),
-      emailHref: toEmailHref(hospital.contactEmail),
+      phoneHref: toPhoneHref(hospital.contactPhone || DEFAULT_HOSPITAL.contactPhone),
+      emailHref: toEmailHref(hospital.contactEmail || DEFAULT_HOSPITAL.contactEmail),
       loading,
     }),
     [hospital, loading],

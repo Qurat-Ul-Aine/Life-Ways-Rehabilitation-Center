@@ -8,8 +8,8 @@ export default function ConfidentialityCard({
   message = "Confidential — visible only to you and authorised care team members.",
 }: Props) {
   return (
-    <Card className="border-slate-800 bg-slate-900">
-      <CardContent className="space-y-2 p-4 text-center text-xs text-slate-500">
+    <Card className="border-border bg-card shadow-sm">
+      <CardContent className="space-y-2 p-4 text-center text-xs text-muted-foreground">
         <p>{message}</p>
       </CardContent>
     </Card>

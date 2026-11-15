@@ -12,20 +12,29 @@ import { useHospitalContact } from "@/features/admin/hooks/useHospitalContact";
 type NavLinkType = {
   label: string;
   href?: string;
-  isDropdown?: boolean;
+  dropdown?: "services" | "care-support";
+};
+
+type DropdownLink = {
+  label: string;
+  href: string;
   icon?: React.ReactNode;
 };
 
 const navLinks: NavLinkType[] = [
   { label: "Home", href: "/" },
-  { label: "Services", isDropdown: true },
-  { label: "Doctors", href: "/doctors" },
-  { label: "Find My Doctor", href: "/find-my-doctor" },
-  { label: "Gallery", href: "/gallery" },
-  { label: "Testimonials", href: "/testimonials" },
+  { label: "Services", dropdown: "services" },
+  { label: "Care & Support", dropdown: "care-support" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/#contact" },
+];
+
+const careSupportLinks: DropdownLink[] = [
+  { label: "Find My Doctor", href: "/find-my-doctor" },
   { label: "Take a Screening Test", href: "/screening/intro", icon: <ClipboardCheck className="w-4 h-4" /> },
+  { label: "Our Doctors", href: "/doctors" },
+  { label: "Testimonials", href: "/testimonials" },
+  { label: "Gallery", href: "/gallery" },
 ];
 
 const Navbar = () => {
@@ -58,6 +67,72 @@ const Navbar = () => {
     }
   };
 
+  const renderDropdownPanel = (type: "services" | "care-support", onItemClick?: () => void) => {
+    if (type === "services") {
+      return services.map((s) => (
+        <li key={s.slug}>
+          <Link
+            to={`/services/${s.slug}`}
+            onClick={onItemClick}
+            className="block px-4 py-2.5 text-sm hover:bg-muted transition-colors"
+          >
+            {s.title}
+          </Link>
+        </li>
+      ));
+    }
+
+    return careSupportLinks.map((item) => (
+      <li key={item.href}>
+        <Link
+          to={item.href}
+          onClick={onItemClick}
+          className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-muted transition-colors"
+        >
+          {item.icon && <span className="text-primary">{item.icon}</span>}
+          {item.label}
+        </Link>
+      </li>
+    ));
+  };
+
+  const renderMobileDropdown = (type: "services" | "care-support", label: string) => (
+    <>
+      <button
+        onClick={() => type === "services" && handleNavClick("/#services")}
+        className="block w-full text-left px-4 py-3 text-sm font-medium hover:bg-muted transition-colors"
+      >
+        {label}
+      </button>
+      <ul className="pl-4 border-l border-border ml-4 mb-2">
+        {type === "services"
+          ? services.map((s) => (
+              <li key={s.slug}>
+                <Link
+                  to={`/services/${s.slug}`}
+                  onClick={() => setOpen(false)}
+                  className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {s.title}
+                </Link>
+              </li>
+            ))
+          : careSupportLinks.map((item) => (
+              <li key={item.href}>
+                <Link
+                  to={item.href}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {item.icon && <span className="text-primary">{item.icon}</span>}
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+      </ul>
+    </>
+  );
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card/85 backdrop-blur-md border-b border-border">
       <div className="container mx-auto flex items-center justify-between py-3 px-4">
@@ -73,55 +148,20 @@ const Navbar = () => {
           <span className="text-lg font-bold font-heading text-heading sm:hidden">{brandLabel.split(" ")[0]}</span>
         </Link>
 
-        {/* Desktop Navigation - Hidden on mobile, scrollable on tablets */}
-        <ul className="hidden md:flex lg:hidden items-center gap-4 overflow-x-auto scrollbar-hide px-2">
+        {/* Desktop Navigation */}
+        <ul className="hidden md:flex items-center gap-6">
           {navLinks.map((l) => (
-            <li key={l.label} className="shrink-0">
-              {l.isDropdown ? (
-                <button
-                  onClick={() => handleNavClick("/#services")}
-                  className="flex items-center gap-1 text-xs font-medium text-foreground hover:text-primary transition-colors whitespace-nowrap"
-                >
-                  {l.label} <ChevronDown className="w-3 h-3" />
-                </button>
-              ) : (
-                <button
-                  onClick={() => l.href && handleNavClick(l.href)}
-                  className="flex items-center gap-1 text-xs font-medium text-foreground hover:text-primary transition-colors whitespace-nowrap"
-                >
-                  {l.icon && <span className="text-primary">{l.icon}</span>}
-                  {l.label}
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-
-        {/* Large Desktop Navigation - Full horizontal layout */}
-        <ul className="hidden lg:flex items-center gap-6">
-          {navLinks.map((l) => (
-            <li key={l.label} className={l.isDropdown ? "relative group py-4" : "py-4"}>
-              {l.isDropdown ? (
+            <li key={l.label} className={l.dropdown ? "relative group py-4" : "py-4"}>
+              {l.dropdown ? (
                 <>
                   <button
-                    onClick={() => handleNavClick("/#services")}
+                    onClick={() => l.dropdown === "services" && handleNavClick("/#services")}
                     className="flex items-center gap-1 text-sm font-medium text-foreground hover:text-primary transition-colors"
                   >
                     {l.label} <ChevronDown className="w-3.5 h-3.5 transition-transform group-hover:rotate-180" />
                   </button>
                   <div className="absolute top-full left-1/2 -translate-x-1/2 w-[280px] bg-card border border-border rounded-xl shadow-card opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-2 group-hover:translate-y-0 overflow-hidden">
-                    <ul className="py-2">
-                      {services.map((s) => (
-                        <li key={s.slug}>
-                          <Link
-                            to={`/services/${s.slug}`}
-                            className="block px-4 py-2.5 text-sm hover:bg-muted transition-colors"
-                          >
-                            {s.title}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
+                    <ul className="py-2">{renderDropdownPanel(l.dropdown)}</ul>
                   </div>
                 </>
               ) : (
@@ -129,7 +169,6 @@ const Navbar = () => {
                   onClick={() => l.href && handleNavClick(l.href)}
                   className="flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-primary transition-colors"
                 >
-                  {l.icon && <span className="text-primary">{l.icon}</span>}
                   {l.label}
                 </button>
               )}
@@ -140,6 +179,12 @@ const Navbar = () => {
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex items-center gap-2 lg:gap-3 shrink-0">
           <ThemeToggle />
+          <Link
+            to="/appointments/book"
+            className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity lg:px-4 lg:py-2.5 lg:text-sm whitespace-nowrap"
+          >
+            Book Appointment
+          </Link>
           {!isAuthenticated ? (
             <>
               <Link
@@ -203,39 +248,27 @@ const Navbar = () => {
             <ul className="py-4 space-y-1">
               {navLinks.map((l) => (
                 <li key={l.label}>
-                  {l.isDropdown ? (
-                    <>
-                      <button
-                        onClick={() => handleNavClick("/#services")}
-                        className="block w-full text-left px-4 py-3 text-sm font-medium hover:bg-muted transition-colors"
-                      >
-                        {l.label}
-                      </button>
-                      <ul className="pl-4 border-l border-border ml-4 mb-2">
-                        {services.map((s) => (
-                          <li key={s.slug}>
-                            <Link
-                              to={`/services/${s.slug}`}
-                              onClick={() => setOpen(false)}
-                              className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                            >
-                              {s.title}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
+                  {l.dropdown ? (
+                    renderMobileDropdown(l.dropdown, l.label)
                   ) : (
                     <button
                       onClick={() => l.href && handleNavClick(l.href)}
                       className="flex items-center gap-2 w-full text-left px-4 py-3 text-sm font-medium hover:bg-muted transition-colors"
                     >
-                      {l.icon && <span className="text-primary">{l.icon}</span>}
                       {l.label}
                     </button>
                   )}
                 </li>
               ))}
+              <li className="px-4 py-2">
+                <Link
+                  to="/appointments/book"
+                  onClick={() => setOpen(false)}
+                  className="block w-full px-4 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-semibold text-center hover:opacity-90 transition-opacity"
+                >
+                  Book Appointment
+                </Link>
+              </li>
               <li className="px-4 py-2">
                 <ThemeToggle variant="compact" className="w-full justify-center" />
               </li>

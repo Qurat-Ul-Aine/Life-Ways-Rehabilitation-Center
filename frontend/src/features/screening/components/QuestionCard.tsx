@@ -10,9 +10,9 @@ type Props = {
 
 export default function QuestionCard({ question, selectedValue, onSelect }: Props) {
   return (
-    <Card className="border-slate-800 bg-slate-900">
+    <Card className="border-border bg-card shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-medium text-white">
+        <CardTitle className="text-base font-medium text-foreground">
           {question.text}
           {question.isRequired ? <span className="text-destructive"> *</span> : null}
         </CardTitle>

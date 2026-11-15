@@ -35,7 +35,7 @@ export default function QuestionnairePage() {
       totalSteps={totalSteps}
       title={conditionName ? `${conditionName} Assessment` : "Questionnaire"}
     >
-      <p className="text-sm text-slate-400">{guidance.questionnairePreamble}</p>
+      <p className="text-sm text-muted-foreground">{guidance.questionnairePreamble}</p>
 
       {currentSection ? (
         <>
