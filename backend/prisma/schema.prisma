@@ -4,26 +4,25 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model appointments {
-  id                      String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id              String?                   @db.Uuid
-  doctor_id               String?                   @db.Uuid
+  id                      String                    @id @default(uuid()) @db.VarChar(36)
+  patient_id              String?                   @db.VarChar(36)
+  doctor_id               String?                   @db.VarChar(36)
   appointment_date        DateTime?                 @db.Date
   appointment_time        DateTime?                 @db.Time(6)
   type                    appointment_type?
   status                  appointment_status?
-  notes                   String?
-  service_id              String?                   @db.Uuid
-  cancelled_reason        String?
-  reason                  String?
+  notes                   String?                   @db.Text
+  service_id              String?                   @db.VarChar(36)
+  cancelled_reason        String?                   @db.Text
+  reason                  String?                   @db.Text
   reminder_sent           Boolean                   @default(false)
-  therapy_plan_id         String?                   @db.Uuid
-  analysis_id             String?                   @db.Uuid
+  therapy_plan_id         String?                   @db.VarChar(36)
+  analysis_id             String?                   @db.VarChar(36)
   ai_analysis             ai_analysis?              @relation(fields: [analysis_id], references: [id], onUpdate: NoAction)
   doctors                 doctors?                  @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   patients                patients?                 @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -38,10 +37,10 @@ model appointments {
 }
 
 model rehabilitation_services {
-  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id               String             @id @default(uuid()) @db.VarChar(36)
   slug             String             @unique @db.VarChar(100)
   title            String             @db.VarChar(150)
-  description      String?
+  description      String?            @db.Text
   is_active        Boolean            @default(true)
   appointments     appointments[]
   doctor_service   doctor_service[]
@@ -49,8 +48,8 @@ model rehabilitation_services {
 }
 
 model doctor_service {
-  doctor_id               String                  @db.Uuid
-  service_id              String                  @db.Uuid
+  doctor_id               String                  @db.VarChar(36)
+  service_id              String                  @db.VarChar(36)
   doctors                 doctors                 @relation(fields: [doctor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   rehabilitation_services rehabilitation_services @relation(fields: [service_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -58,18 +57,18 @@ model doctor_service {
 }
 
 model patient_services {
-  id                      String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id              String                  @unique @db.Uuid
-  service_id              String                  @db.Uuid
+  id                      String                  @id @default(uuid()) @db.VarChar(36)
+  patient_id              String                  @unique @db.VarChar(36)
+  service_id              String                  @db.VarChar(36)
   sub_service             String?                 @db.VarChar(150)
-  selected_at             DateTime?               @default(now()) @db.Timestamp(6)
+  selected_at             DateTime?               @default(now()) @db.DateTime(6)
   patients                patients                @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   rehabilitation_services rehabilitation_services @relation(fields: [service_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model doctor_patient {
-  doctor_id  String   @db.Uuid
-  patient_id String   @db.Uuid
+  doctor_id  String   @db.VarChar(36)
+  patient_id String   @db.VarChar(36)
   doctors    doctors  @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   patients   patients @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -77,9 +76,9 @@ model doctor_patient {
 }
 
 model doctor_recommendations {
-  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id     String?     @db.Uuid
-  doctor_id      String?     @db.Uuid
+  id             String      @id @default(uuid()) @db.VarChar(36)
+  patient_id     String?     @db.VarChar(36)
+  doctor_id      String?     @db.VarChar(36)
   condition_type String?     @db.VarChar(100)
   severity_level risk_level?
   match_score    Decimal?    @db.Decimal(5, 2)
@@ -88,27 +87,27 @@ model doctor_recommendations {
 }
 
 model recommendation_log {
-  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id  String       @db.Uuid
-  doctor_id   String       @db.Uuid
+  id          String       @id @default(uuid()) @db.VarChar(36)
+  patient_id  String       @db.VarChar(36)
+  doctor_id   String       @db.VarChar(36)
   score       Float
-  reason      String
-  created_at  DateTime     @default(now()) @db.Timestamp(6)
-  analysis_id String?      @db.Uuid
+  reason      String       @db.Text
+  created_at  DateTime     @default(now()) @db.DateTime(6)
+  analysis_id String?      @db.VarChar(36)
   ai_analysis ai_analysis? @relation(fields: [analysis_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   doctors     doctors      @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   patients    patients     @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model ai_analysis {
-  id                      String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id              String               @db.Uuid
-  symptoms                String
-  detected_issue          String
+  id                      String               @id @default(uuid()) @db.VarChar(36)
+  patient_id              String               @db.VarChar(36)
+  symptoms                String               @db.Text
+  detected_issue          String               @db.Text
   confidence_score        Float
-  created_at              DateTime             @default(now()) @db.Timestamp(6)
-  medical_history_summary String?
-  selected_doctor_id      String?              @db.Uuid
+  created_at              DateTime             @default(now()) @db.DateTime(6)
+  medical_history_summary String?              @db.Text
+  selected_doctor_id      String?              @db.VarChar(36)
   assessment_data         Json?
   patients                patients             @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   selected_doctor         doctors?             @relation("ai_analysis_selected_doctor", fields: [selected_doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -118,14 +117,14 @@ model ai_analysis {
 }
 
 model doctor_match_notes {
-  id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  doctor_id        String      @db.Uuid
-  patient_id       String      @db.Uuid
-  analysis_id      String      @db.Uuid
-  assessment_notes String?
-  treatment_notes  String?
-  progress_notes   String?
-  updated_at       DateTime    @default(now()) @updatedAt @db.Timestamp(6)
+  id               String      @id @default(uuid()) @db.VarChar(36)
+  doctor_id        String      @db.VarChar(36)
+  patient_id       String      @db.VarChar(36)
+  analysis_id      String      @db.VarChar(36)
+  assessment_notes String?     @db.Text
+  treatment_notes  String?     @db.Text
+  progress_notes   String?     @db.Text
+  updated_at       DateTime    @default(now()) @updatedAt @db.DateTime(6)
   ai_analysis      ai_analysis @relation(fields: [analysis_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   doctors          doctors     @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   patients         patients    @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -134,8 +133,8 @@ model doctor_match_notes {
 }
 
 model doctors {
-  id                      String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id                 String?                   @unique @db.Uuid
+  id                      String                    @id @default(uuid()) @db.VarChar(36)
+  user_id                 String?                   @unique @db.VarChar(36)
   license_no              String                    @unique @db.VarChar(50)
   experience_years        Int?
   specialization          String?                   @db.VarChar(100)
@@ -144,10 +143,10 @@ model doctors {
   consultation_fee        Decimal?                  @db.Decimal(10, 2)
   rating                  Decimal?                  @db.Decimal(3, 2)
   is_approved             Boolean                   @default(false)
-  about                   String?
+  about                   String?                   @db.Text
   availability_schedule   Json?
   doctor_role             String?                   @db.VarChar(50)
-  image_url               String?
+  image_url               String?                   @db.Text
   patients_treated        Int?
   success_rate            Decimal?                  @db.Decimal(5, 2)
   gender                  String?                   @db.VarChar(50)
@@ -170,11 +169,11 @@ model doctors {
 }
 
 model feedback {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id    String?   @db.Uuid
-  doctor_id     String?   @db.Uuid
+  id            String    @id @default(uuid()) @db.VarChar(36)
+  patient_id    String?   @db.VarChar(36)
+  doctor_id     String?   @db.VarChar(36)
   rating        Int?
-  comments      String?
+  comments      String?   @db.Text
   feedback_date DateTime? @db.Date
   doctors       doctors?  @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   patients      patients? @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -182,34 +181,34 @@ model feedback {
 
 model internee_degrees {
   id             Int        @id @default(autoincrement())
-  internee_id    String?    @db.Uuid
+  internee_id    String?    @db.VarChar(36)
   degree_program String?    @db.VarChar(100)
   internees      internees? @relation(fields: [internee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model internee_universities {
   id              Int        @id @default(autoincrement())
-  internee_id     String?    @db.Uuid
+  internee_id     String?    @db.VarChar(36)
   university_name String?    @db.VarChar(150)
   internees       internees? @relation(fields: [internee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model internees {
-  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id               String?                 @db.Uuid
+  id                    String                  @id @default(uuid()) @db.VarChar(36)
+  user_id               String?                 @db.VarChar(36)
   internship_start      DateTime?               @db.Date
   internship_end        DateTime?               @db.Date
-  mentor_id             String?                 @db.Uuid
+  mentor_id             String?                 @db.VarChar(36)
   department            String?                 @db.VarChar(100)
   is_active             Boolean                 @default(true)
   gender                String?                 @db.VarChar(20)
   date_of_birth         DateTime?               @db.Date
-  address               String?
+  address               String?                 @db.Text
   cnic                  String?                 @db.VarChar(20)
   semester              String?                 @db.VarChar(50)
   emergency_contact     String?                 @db.VarChar(150)
-  skills                String?
-  notes                 String?
+  skills                String?                 @db.Text
+  notes                 String?                 @db.Text
   application_status    String?                 @default("ACTIVE") @db.VarChar(30)
   required_hours        Decimal?                @default(480) @db.Decimal(7, 2)
   intern_attendance     intern_attendance[]
@@ -223,64 +222,64 @@ model internees {
 }
 
 model intern_audit_logs {
-  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  intern_id     String?    @db.Uuid
+  id            String     @id @default(uuid()) @db.VarChar(36)
+  intern_id     String?    @db.VarChar(36)
   action        String?    @db.VarChar(50)
-  changed_by    String?    @db.Uuid
-  timestamp     DateTime?  @default(now()) @db.Timestamp(6)
+  changed_by    String?    @db.VarChar(36)
+  timestamp     DateTime?  @default(now()) @db.DateTime(6)
   previous_data Json?
   new_data      Json?
   internees     internees? @relation(fields: [intern_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model intern_training_logs {
-  id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  intern_id       String?    @db.Uuid
+  id              String     @id @default(uuid()) @db.VarChar(36)
+  intern_id       String?    @db.VarChar(36)
   hours_worked    Decimal?   @db.Decimal(5, 2)
-  tasks_completed String?
-  learning_notes  String?
-  skills_learned  String?
-  challenges      String?
-  mentor_remarks  String?
+  tasks_completed String?    @db.Text
+  learning_notes  String?    @db.Text
+  skills_learned  String?    @db.Text
+  challenges      String?    @db.Text
+  mentor_remarks  String?    @db.Text
   log_type        String?    @default("daily") @db.VarChar(20)
   status          String?    @default("submitted") @db.VarChar(20)
   log_date        DateTime?  @db.Date
-  created_by      String?    @db.Uuid
-  reviewed_by     String?    @db.Uuid
-  reviewed_at     DateTime?  @db.Timestamp(6)
-  created_at      DateTime?  @default(now()) @db.Timestamp(6)
-  updated_at      DateTime?  @db.Timestamp(6)
+  created_by      String?    @db.VarChar(36)
+  reviewed_by     String?    @db.VarChar(36)
+  reviewed_at     DateTime?  @db.DateTime(6)
+  created_at      DateTime?  @default(now()) @db.DateTime(6)
+  updated_at      DateTime?  @db.DateTime(6)
   internees       internees? @relation(fields: [intern_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model intern_attendance {
-  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  intern_id    String?    @db.Uuid
+  id           String     @id @default(uuid()) @db.VarChar(36)
+  intern_id    String?    @db.VarChar(36)
   record_date  DateTime?  @db.Date
   check_in     String?    @db.VarChar(10)
   check_out    String?    @db.VarChar(10)
   hours_worked Decimal?   @db.Decimal(5, 2)
   status       String?    @db.VarChar(20)
-  remarks      String?
-  created_by   String?    @db.Uuid
-  approved_by  String?    @db.Uuid
-  approved_at  DateTime?  @db.Timestamp(6)
-  created_at   DateTime?  @default(now()) @db.Timestamp(6)
-  updated_at   DateTime?  @db.Timestamp(6)
+  remarks      String?    @db.Text
+  created_by   String?    @db.VarChar(36)
+  approved_by  String?    @db.VarChar(36)
+  approved_at  DateTime?  @db.DateTime(6)
+  created_at   DateTime?  @default(now()) @db.DateTime(6)
+  updated_at   DateTime?  @db.DateTime(6)
   internees    internees? @relation(fields: [intern_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([intern_id, record_date])
 }
 
 model intern_evaluations {
-  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  intern_id    String?    @db.Uuid
-  mentor_id    String?    @db.Uuid
+  id           String     @id @default(uuid()) @db.VarChar(36)
+  intern_id    String?    @db.VarChar(36)
+  mentor_id    String?    @db.VarChar(36)
   rating       Int?
-  comments     String?
+  comments     String?    @db.Text
   criteria     Json?
-  evaluated_at DateTime?  @default(now()) @db.Timestamp(6)
-  created_by   String?    @db.Uuid
+  evaluated_at DateTime?  @default(now()) @db.DateTime(6)
+  created_by   String?    @db.VarChar(36)
   internees    internees? @relation(fields: [intern_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   doctors      doctors?   @relation(fields: [mentor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -288,18 +287,18 @@ model intern_evaluations {
 }
 
 model notifications {
-  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id        String?            @db.Uuid
+  id             String             @id @default(uuid()) @db.VarChar(36)
+  user_id        String?            @db.VarChar(36)
   type           notification_type?
-  message        String?
+  message        String?            @db.Text
   status         String?            @db.VarChar(20)
-  sent_date      DateTime?          @db.Timestamp(6)
+  sent_date      DateTime?          @db.DateTime(6)
   title          String?            @db.VarChar(200)
   is_read        Boolean?           @default(false)
-  created_at     DateTime?          @default(now()) @db.Timestamp(6)
+  created_at     DateTime?          @default(now()) @db.DateTime(6)
   recipient_role user_role?
-  related_id     String?            @db.Uuid
-  failure_reason String?
+  related_id     String?            @db.VarChar(36)
+  failure_reason String?            @db.Text
   users          users?             @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([user_id])
@@ -308,44 +307,44 @@ model notifications {
 
 model patient_addresses {
   id         Int       @id @default(autoincrement())
-  patient_id String?   @db.Uuid
-  address    String?
+  patient_id String?   @db.VarChar(36)
+  address    String?   @db.Text
   patients   patients? @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model patient_admissions {
-  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id     String?   @db.Uuid
+  id             String    @id @default(uuid()) @db.VarChar(36)
+  patient_id     String?   @db.VarChar(36)
   admission_date DateTime? @db.Date
   discharge_date DateTime? @db.Date
-  condition      String?
+  condition      String?   @db.Text
   patients       patients? @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model patient_medical_history {
   id         Int       @id @default(autoincrement())
-  patient_id String?   @db.Uuid
-  history    String?
+  patient_id String?   @db.VarChar(36)
+  history    String?   @db.Text
   patients   patients? @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model patient_phones {
   id         Int       @id @default(autoincrement())
-  patient_id String?   @db.Uuid
+  patient_id String?   @db.VarChar(36)
   phone      String?   @db.VarChar(20)
   patients   patients? @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model patients {
-  id                      String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id                 String?                   @unique @db.Uuid
+  id                      String                    @id @default(uuid()) @db.VarChar(36)
+  user_id                 String?                   @unique @db.VarChar(36)
   age                     Int?
   gender                  String?                   @db.VarChar(10)
   nationality             String?                   @db.VarChar(50)
   condition               String?                   @db.VarChar(100)
-  profile_image_url       String?
-  about_me                String?
-  allergies               String?
+  profile_image_url       String?                   @db.Text
+  about_me                String?                   @db.Text
+  allergies               String?                   @db.Text
   blood_group             String?                   @db.VarChar(10)
   date_of_birth           DateTime?                 @db.Date
   emergency_contact_name  String?                   @db.VarChar(100)
@@ -377,35 +376,35 @@ model patients {
 }
 
 model patient_documents {
-  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id    String          @db.Uuid
+  id            String          @id @default(uuid()) @db.VarChar(36)
+  patient_id    String          @db.VarChar(36)
   category      String          @db.VarChar(50)
   title         String          @db.VarChar(255)
   file_name     String          @db.VarChar(255)
   original_name String          @db.VarChar(255)
   mime_type     String?         @db.VarChar(100)
   file_size     Int?
-  uploaded_at   DateTime?       @default(now()) @db.Timestamp(6)
+  uploaded_at   DateTime?       @default(now()) @db.DateTime(6)
   patients      patients        @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   prescriptions prescriptions[]
 }
 
 model reports {
-  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id     String?   @db.Uuid
-  generated_by   String?   @db.Uuid
+  id             String    @id @default(uuid()) @db.VarChar(36)
+  patient_id     String?   @db.VarChar(36)
+  generated_by   String?   @db.VarChar(36)
   report_type    String?   @db.VarChar(50)
-  report_data    String?
-  generated_date DateTime? @db.Timestamp(6)
+  report_data    String?   @db.Text
+  generated_date DateTime? @db.DateTime(6)
   users          users?    @relation(fields: [generated_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
   patients       patients? @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model screening_conditions {
-  id                    String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                    String                    @id @default(uuid()) @db.VarChar(36)
   slug                  String                    @unique @db.VarChar(50)
   name                  String                    @db.VarChar(150)
-  description           String?
+  description           String?                   @db.Text
   icon                  String?                   @db.VarChar(50)
   sort_order            Int                       @default(0)
   is_active             Boolean                   @default(true)
@@ -420,10 +419,10 @@ model screening_conditions {
 }
 
 model screening_questions {
-  id             String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  condition_id   String               @db.Uuid
+  id             String               @id @default(uuid()) @db.VarChar(36)
+  condition_id   String               @db.VarChar(36)
   section_title  String?              @db.VarChar(150)
-  question_text  String
+  question_text  String               @db.Text
   question_type  String               @default("single_choice") @db.VarChar(30)
   options        Json
   sort_order     Int                  @default(0)
@@ -435,12 +434,12 @@ model screening_questions {
 }
 
 model screening_risk_guidance {
-  id              String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  condition_id    String               @db.Uuid
+  id              String               @id @default(uuid()) @db.VarChar(36)
+  condition_id    String               @db.VarChar(36)
   risk_level      risk_level
   title           String               @db.VarChar(200)
-  description     String
-  explanation     String?
+  description     String               @db.Text
+  explanation     String?              @db.Text
   recommendations Json
   conditions      screening_conditions @relation(fields: [condition_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -448,26 +447,26 @@ model screening_risk_guidance {
 }
 
 model screening_config {
-  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id    String @id @default(uuid()) @db.VarChar(36)
   key   String @unique @db.VarChar(100)
   value Json
 }
 
 model screening_tests {
-  id                 String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id         String?               @db.Uuid
+  id                 String                @id @default(uuid()) @db.VarChar(36)
+  patient_id         String?               @db.VarChar(36)
   test_type          String?               @db.VarChar(50)
   score              Decimal?              @db.Decimal(5, 2)
   risk_level         risk_level?
   test_date          DateTime?             @db.Date
-  condition_id       String?               @db.Uuid
+  condition_id       String?               @db.VarChar(36)
   assessment_type    String?               @db.VarChar(20)
   age                Int?
   gender             String?               @db.VarChar(20)
   status             String?               @default("completed") @db.VarChar(20)
-  explanation        String?
+  explanation        String?               @db.Text
   recommendations    Json?
-  assigned_doctor_id String?               @db.Uuid
+  assigned_doctor_id String?               @db.VarChar(36)
   flagged            Boolean               @default(false)
   follow_up_date     DateTime?             @db.Date
   answers            screening_answers[]
@@ -482,38 +481,38 @@ model screening_tests {
 }
 
 model screening_answers {
-  id           String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  screening_id String              @db.Uuid
-  question_id  String              @db.Uuid
-  answer_value String
+  id           String              @id @default(uuid()) @db.VarChar(36)
+  screening_id String              @db.VarChar(36)
+  question_id  String              @db.VarChar(36)
+  answer_value String              @db.Text
   score        Decimal?            @db.Decimal(5, 2)
   questions    screening_questions @relation(fields: [question_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   screenings   screening_tests     @relation(fields: [screening_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model telehealth_sessions {
-  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  appointment_id String?       @db.Uuid
-  meeting_link   String?
-  start_time     DateTime?     @db.Timestamp(6)
-  end_time       DateTime?     @db.Timestamp(6)
-  notes          String?
+  id             String        @id @default(uuid()) @db.VarChar(36)
+  appointment_id String?       @db.VarChar(36)
+  meeting_link   String?       @db.Text
+  start_time     DateTime?     @db.DateTime(6)
+  end_time       DateTime?     @db.DateTime(6)
+  notes          String?       @db.Text
   appointments   appointments? @relation(fields: [appointment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model therapy_exercises {
-  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  therapy_plan_id String?        @db.Uuid
+  id              String         @id @default(uuid()) @db.VarChar(36)
+  therapy_plan_id String?        @db.VarChar(36)
   title           String?        @db.VarChar(150)
-  description     String?
-  media_url       String?
-  created_at      DateTime?      @default(now()) @db.Timestamp(6)
+  description     String?        @db.Text
+  media_url       String?        @db.Text
+  created_at      DateTime?      @default(now()) @db.DateTime(6)
   therapy_plans   therapy_plans? @relation(fields: [therapy_plan_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model therapy_plan_files {
-  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  therapy_plan_id String        @db.Uuid
+  id              String        @id @default(uuid()) @db.VarChar(36)
+  therapy_plan_id String        @db.VarChar(36)
   title           String        @db.VarChar(255)
   file_name       String        @db.VarChar(255)
   original_name   String        @db.VarChar(255)
@@ -521,22 +520,22 @@ model therapy_plan_files {
   file_size       Int?
   file_type       String?       @db.VarChar(20)
   uploaded_by     String?       @db.VarChar(150)
-  uploaded_at     DateTime?     @default(now()) @db.Timestamp(6)
+  uploaded_at     DateTime?     @default(now()) @db.DateTime(6)
   therapy_plans   therapy_plans @relation(fields: [therapy_plan_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([therapy_plan_id, uploaded_at(sort: Desc)])
 }
 
 model therapy_plans {
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id         String?              @db.Uuid
-  doctor_id          String?              @db.Uuid
+  id                 String               @id @default(uuid()) @db.VarChar(36)
+  patient_id         String?              @db.VarChar(36)
+  doctor_id          String?              @db.VarChar(36)
   therapy_type       String?              @db.VarChar(100)
-  description        String?
+  description        String?              @db.Text
   start_date         DateTime?            @db.Date
   end_date           DateTime?            @db.Date
   status             therapy_status?
-  diagnosis          String?
+  diagnosis          String?              @db.Text
   goals              Json?
   frequency_per_week Int?
   appointments       appointments[]
@@ -548,11 +547,11 @@ model therapy_plans {
 }
 
 model therapy_sessions {
-  id                  String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  therapy_plan_id     String?         @db.Uuid
+  id                  String          @id @default(uuid()) @db.VarChar(36)
+  therapy_plan_id     String?         @db.VarChar(36)
   session_date        DateTime?       @db.Date
   duration            Int?
-  progress_notes      String?
+  progress_notes      String?         @db.Text
   status              session_status?
   outcome             String?         @db.VarChar(50)
   mood                String?         @db.VarChar(20)
@@ -560,12 +559,12 @@ model therapy_sessions {
   attendance          String?         @db.VarChar(20)
   reminder_sent       Boolean         @default(false)
   session_type        String?         @db.VarChar(20)
-  chief_complaint     String?
-  observations        String?
-  exercises_discussed String?
-  next_steps          String?
-  confidential_notes  String?
-  appointment_id      String?         @db.Uuid
+  chief_complaint     String?         @db.Text
+  observations        String?         @db.Text
+  exercises_discussed String?         @db.Text
+  next_steps          String?         @db.Text
+  confidential_notes  String?         @db.Text
+  appointment_id      String?         @db.VarChar(36)
   appointments        appointments?   @relation(fields: [appointment_id], references: [id], onUpdate: NoAction)
   therapy_plans       therapy_plans?  @relation(fields: [therapy_plan_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -574,18 +573,18 @@ model therapy_sessions {
 
 model user_phones {
   id      Int     @id @default(autoincrement())
-  user_id String? @db.Uuid
+  user_id String? @db.VarChar(36)
   phone   String  @db.VarChar(20)
   users   users?  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model users {
-  id                    String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                    String                    @id @default(uuid()) @db.VarChar(36)
   name                  String                    @db.VarChar(100)
   email                 String                    @unique @db.VarChar(150)
   password              String
   role                  user_role
-  created_at            DateTime?                 @default(now()) @db.Timestamp(6)
+  created_at            DateTime?                 @default(now()) @db.DateTime(6)
   is_active             Boolean                   @default(true)
   avatar_url            String?                   @db.VarChar(500)
   doctors               doctors?
@@ -603,8 +602,8 @@ model users {
 }
 
 model user_preferences {
-  id                                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id                            String   @unique @db.Uuid
+  id                                 String   @id @default(uuid()) @db.VarChar(36)
+  user_id                            String   @unique @db.VarChar(36)
   appointment_notifications          Boolean  @default(true)
   medication_reminders               Boolean  @default(true)
   recovery_notifications             Boolean  @default(true)
@@ -615,8 +614,8 @@ model user_preferences {
   profile_visibility                 String   @default("care_team") @db.VarChar(30)
   data_sharing                       Boolean  @default(true)
   theme                              String   @default("system") @db.VarChar(20)
-  created_at                         DateTime @default(now()) @db.Timestamp(6)
-  updated_at                         DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  created_at                         DateTime @default(now()) @db.DateTime(6)
+  updated_at                         DateTime @default(now()) @updatedAt @db.DateTime(6)
   doctor_registration_notifications  Boolean  @default(true)
   patient_registration_notifications Boolean  @default(true)
   telehealth_notifications           Boolean  @default(true)
@@ -625,29 +624,29 @@ model user_preferences {
 
 model user_security_questions {
   id           Int       @id @default(autoincrement())
-  user_id      String    @db.Uuid
+  user_id      String    @db.VarChar(36)
   question_key String    @db.VarChar(100)
   answer_hash  String    @db.VarChar(255)
-  created_at   DateTime? @default(now()) @db.Timestamp(6)
-  updated_at   DateTime? @default(now()) @updatedAt @db.Timestamp(6)
+  created_at   DateTime? @default(now()) @db.DateTime(6)
+  updated_at   DateTime? @default(now()) @updatedAt @db.DateTime(6)
   users        users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([user_id, question_key])
 }
 
 model family_members {
-  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id      String    @unique @db.Uuid
-  patient_id   String    @db.Uuid
+  id           String    @id @default(uuid()) @db.VarChar(36)
+  user_id      String    @unique @db.VarChar(36)
+  patient_id   String    @db.VarChar(36)
   relationship String?   @db.VarChar(50)
-  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  created_at   DateTime? @default(now()) @db.DateTime(6)
   patients     patients  @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   users        users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model staff {
-  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id          String?            @unique @db.Uuid
+  id               String             @id @default(uuid()) @db.VarChar(36)
+  user_id          String?            @unique @db.VarChar(36)
   department       String?            @db.VarChar(100)
   position         String?            @db.VarChar(100)
   joined_at        DateTime?          @db.Date
@@ -666,28 +665,28 @@ model staff {
 }
 
 model staff_documents {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  staff_id      String    @db.Uuid
+  id            String    @id @default(uuid()) @db.VarChar(36)
+  staff_id      String    @db.VarChar(36)
   category      String    @db.VarChar(50)
   title         String    @db.VarChar(255)
   file_name     String    @db.VarChar(255)
   original_name String    @db.VarChar(255)
   mime_type     String?   @db.VarChar(100)
   file_size     Int?
-  uploaded_at   DateTime? @default(now()) @db.Timestamp(6)
+  uploaded_at   DateTime? @default(now()) @db.DateTime(6)
   staff         staff     @relation(fields: [staff_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([staff_id, uploaded_at(sort: Desc)])
 }
 
 model staff_attendance {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  staff_id   String    @db.Uuid
+  id         String    @id @default(uuid()) @db.VarChar(36)
+  staff_id   String    @db.VarChar(36)
   date       DateTime  @db.Date
   status     String    @db.VarChar(20)
   check_in   String?   @db.VarChar(10)
   check_out  String?   @db.VarChar(10)
-  created_at DateTime? @default(now()) @db.Timestamp(6)
+  created_at DateTime? @default(now()) @db.DateTime(6)
   staff      staff     @relation(fields: [staff_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([staff_id, date])
@@ -695,43 +694,43 @@ model staff_attendance {
 }
 
 model staff_tasks {
-  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  staff_id         String   @db.Uuid
-  task_description String
+  id               String   @id @default(uuid()) @db.VarChar(36)
+  staff_id         String   @db.VarChar(36)
+  task_description String   @db.Text
   assigned_by      String   @db.VarChar(100)
-  assigned_by_id   String?  @db.Uuid
+  assigned_by_id   String?  @db.VarChar(36)
   status           String   @default("pending") @db.VarChar(20)
-  date             DateTime @default(now()) @db.Timestamp(6)
+  date             DateTime @default(now()) @db.DateTime(6)
   staff            staff    @relation(fields: [staff_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([staff_id, date(sort: Desc)])
 }
 
 model staff_notes {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  staff_id      String   @db.Uuid
-  note_text     String
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  staff_id      String   @db.VarChar(36)
+  note_text     String   @db.Text
   added_by      String   @db.VarChar(100)
-  added_by_id   String?  @db.Uuid
+  added_by_id   String?  @db.VarChar(36)
   added_by_role String?  @db.VarChar(20)
-  date          DateTime @default(now()) @db.Timestamp(6)
+  date          DateTime @default(now()) @db.DateTime(6)
   staff         staff    @relation(fields: [staff_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([staff_id, date(sort: Desc)])
 }
 
 model audit_logs {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id            String   @id @default(uuid()) @db.VarChar(36)
   action        String   @db.VarChar(50)
   entity_type   String   @db.VarChar(50)
   entity_id     String?  @db.VarChar(100)
-  patient_id    String?  @db.Uuid
-  actor_user_id String?  @db.Uuid
+  patient_id    String?  @db.VarChar(36)
+  actor_user_id String?  @db.VarChar(36)
   actor_name    String?  @db.VarChar(100)
   actor_role    String?  @db.VarChar(50)
-  summary       String?
+  summary       String?  @db.Text
   metadata      Json?
-  created_at    DateTime @default(now()) @db.Timestamp(6)
+  created_at    DateTime @default(now()) @db.DateTime(6)
 
   @@index([patient_id])
   @@index([created_at(sort: Desc)])
@@ -739,20 +738,20 @@ model audit_logs {
 
 model password_reset_tokens {
   id         Int      @id @default(autoincrement())
-  user_id    String   @db.Uuid
+  user_id    String   @db.VarChar(36)
   token      String   @unique @db.VarChar(255)
-  expires_at DateTime @db.Timestamp(6)
+  expires_at DateTime @db.DateTime(6)
   used       Boolean  @default(false)
-  created_at DateTime @default(now()) @db.Timestamp(6)
+  created_at DateTime @default(now()) @db.DateTime(6)
   users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model message_threads {
-  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  doctor_id  String     @db.Uuid
-  patient_id String     @db.Uuid
-  created_at DateTime   @default(now()) @db.Timestamp(6)
-  updated_at DateTime   @default(now()) @updatedAt @db.Timestamp(6)
+  id         String     @id @default(uuid()) @db.VarChar(36)
+  doctor_id  String     @db.VarChar(36)
+  patient_id String     @db.VarChar(36)
+  created_at DateTime   @default(now()) @db.DateTime(6)
+  updated_at DateTime   @default(now()) @updatedAt @db.DateTime(6)
   doctors    doctors    @relation(fields: [doctor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   patients   patients   @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   messages   messages[]
@@ -764,12 +763,12 @@ model message_threads {
 }
 
 model messages {
-  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  thread_id       String          @db.Uuid
-  sender_user_id  String          @db.Uuid
-  body            String
-  read_at         DateTime?       @db.Timestamp(6)
-  created_at      DateTime        @default(now()) @db.Timestamp(6)
+  id              String          @id @default(uuid()) @db.VarChar(36)
+  thread_id       String          @db.VarChar(36)
+  sender_user_id  String          @db.VarChar(36)
+  body            String          @db.Text
+  read_at         DateTime?       @db.DateTime(6)
+  created_at      DateTime        @default(now()) @db.DateTime(6)
   users           users           @relation(fields: [sender_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   message_threads message_threads @relation(fields: [thread_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -778,24 +777,24 @@ model messages {
 }
 
 model prescriptions {
-  id                String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id        String                 @db.Uuid
-  prescribed_by     String                 @db.Uuid
+  id                String                 @id @default(uuid()) @db.VarChar(36)
+  patient_id        String                 @db.VarChar(36)
+  prescribed_by     String                 @db.VarChar(36)
   medication_name   String                 @db.VarChar(255)
   dosage            String                 @db.VarChar(100)
   frequency         String                 @db.VarChar(100)
   duration_days     Int?
   schedule          Json?
-  instructions      String?
-  notes             String?
+  instructions      String?                @db.Text
+  notes             String?                @db.Text
   status            prescription_status    @default(ACTIVE)
   start_date        DateTime               @db.Date
   end_date          DateTime?              @db.Date
-  document_id       String?                @db.Uuid
+  document_id       String?                @db.VarChar(36)
   is_invalid        Boolean                @default(false)
-  deleted_at        DateTime?              @db.Timestamp(6)
-  created_at        DateTime               @default(now()) @db.Timestamp(6)
-  updated_at        DateTime               @default(now()) @updatedAt @db.Timestamp(6)
+  deleted_at        DateTime?              @db.DateTime(6)
+  created_at        DateTime               @default(now()) @db.DateTime(6)
+  updated_at        DateTime               @default(now()) @updatedAt @db.DateTime(6)
   dose_logs         medication_dose_logs[]
   patient_documents patient_documents?     @relation(fields: [document_id], references: [id], onUpdate: NoAction)
   patients          patients               @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -807,12 +806,12 @@ model prescriptions {
 }
 
 model medication_dose_logs {
-  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  prescription_id String        @db.Uuid
-  patient_id      String        @db.Uuid
+  id              String        @id @default(uuid()) @db.VarChar(36)
+  prescription_id String        @db.VarChar(36)
+  patient_id      String        @db.VarChar(36)
   dose_period     dose_period
   log_date        DateTime      @db.Date
-  taken_at        DateTime      @default(now()) @db.Timestamp(6)
+  taken_at        DateTime      @default(now()) @db.DateTime(6)
   patients        patients      @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   prescriptions   prescriptions @relation(fields: [prescription_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -821,16 +820,16 @@ model medication_dose_logs {
 }
 
 model payments {
-  id                       String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id               String         @db.Uuid
+  id                       String         @id @default(uuid()) @db.VarChar(36)
+  patient_id               String         @db.VarChar(36)
   amount                   Decimal        @db.Decimal(12, 2)
   status                   payment_status @default(PENDING)
   reference_number         String?        @db.VarChar(100)
   due_date                 DateTime?      @db.Date
   reminder_before_due_sent Boolean        @default(false)
   reminder_on_due_sent     Boolean        @default(false)
-  created_at               DateTime       @default(now()) @db.Timestamp(6)
-  updated_at               DateTime       @default(now()) @updatedAt @db.Timestamp(6)
+  created_at               DateTime       @default(now()) @db.DateTime(6)
+  updated_at               DateTime       @default(now()) @updatedAt @db.DateTime(6)
   invoice_notified         Boolean        @default(false)
   success_notified         Boolean        @default(false)
   overdue_notified         Boolean        @default(false)
@@ -847,9 +846,9 @@ model hospital_settings {
   logo_url      String?  @db.VarChar(500)
   contact_email String?  @db.VarChar(150)
   contact_phone String?  @db.VarChar(30)
-  address       String?
-  updated_at    DateTime @default(now()) @updatedAt @db.Timestamp(6)
-  updated_by    String?  @db.Uuid
+  address       String?  @db.Text
+  updated_at    DateTime @default(now()) @updatedAt @db.DateTime(6)
+  updated_by    String?  @db.VarChar(36)
 }
 
 model system_preferences {
@@ -857,28 +856,28 @@ model system_preferences {
   default_appointment_duration Int      @default(30)
   timezone                     String   @default("Asia/Karachi") @db.VarChar(50)
   date_format                  String   @default("dd MMM yyyy") @db.VarChar(30)
-  updated_at                   DateTime @default(now()) @updatedAt @db.Timestamp(6)
-  updated_by                   String?  @db.Uuid
+  updated_at                   DateTime @default(now()) @updatedAt @db.DateTime(6)
+  updated_by                   String?  @db.VarChar(36)
 }
 
 model online_therapy_sessions {
-  id                       String                        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  patient_id               String                        @db.Uuid
-  doctor_id                String                        @db.Uuid
-  appointment_id           String?                       @db.Uuid
+  id                       String                        @id @default(uuid()) @db.VarChar(36)
+  patient_id               String                        @db.VarChar(36)
+  doctor_id                String                        @db.VarChar(36)
+  appointment_id           String?                       @db.VarChar(36)
   session_date             DateTime                      @db.Date
   session_time             DateTime                      @db.Time(6)
   duration                 Int?                          @default(45)
   status                   online_therapy_session_status @default(SCHEDULED)
-  meeting_link             String?
+  meeting_link             String?                       @db.Text
   meeting_room             String?                       @db.VarChar(255)
-  doctor_notes             String?
+  doctor_notes             String?                       @db.Text
   notes_visible_to_patient Boolean                       @default(false)
   follow_up_required       Boolean                       @default(false)
   follow_up_date           DateTime?                     @db.Date
-  cancelled_reason         String?
-  created_at               DateTime                      @default(now()) @db.Timestamp(6)
-  updated_at               DateTime                      @default(now()) @db.Timestamp(6)
+  cancelled_reason         String?                       @db.Text
+  created_at               DateTime                      @default(now()) @db.DateTime(6)
+  updated_at               DateTime                      @default(now()) @db.DateTime(6)
   appointments             appointments?                 @relation(fields: [appointment_id], references: [id], onUpdate: NoAction)
   doctors                  doctors                       @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   patients                 patients                      @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -911,6 +910,9 @@ enum notification_type {
   EMAIL
   WHATSAPP
   SYSTEM
+  APPOINTMENT
+  PAYMENT
+  MILESTONE
 }
 
 enum risk_level {

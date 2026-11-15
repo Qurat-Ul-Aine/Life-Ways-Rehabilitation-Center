@@ -63,9 +63,8 @@ async function fetchSystemRowRaw() {
 
 async function ensureSystemRowRaw() {
   await prisma.$executeRaw`
-    INSERT INTO system_preferences (id)
+    INSERT IGNORE INTO system_preferences (id)
     VALUES (${SYSTEM_ID})
-    ON CONFLICT (id) DO NOTHING
   `;
   return fetchSystemRowRaw();
 }
@@ -83,7 +82,7 @@ async function updateSystemRowRaw(data) {
         default_appointment_duration = COALESCE(${duration}, default_appointment_duration),
         timezone = COALESCE(${timezone}, timezone),
         date_format = COALESCE(${dateFormat}, date_format),
-        updated_by = CAST(${updatedBy} AS uuid),
+        updated_by = ${updatedBy},
         updated_at = NOW()
       WHERE id = ${SYSTEM_ID}
     `;

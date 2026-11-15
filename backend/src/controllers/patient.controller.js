@@ -373,8 +373,8 @@ async function loadActiveTherapyPlanForDashboard(patientId) {
       sessions = await prisma.$queryRaw`
         SELECT id, therapy_plan_id, session_date, duration, progress_notes, status, outcome, pain_level, attendance, mood
         FROM therapy_sessions
-        WHERE therapy_plan_id = ${plan.id}::uuid
-        ORDER BY session_date DESC NULLS LAST
+        WHERE therapy_plan_id = ${plan.id}
+        ORDER BY session_date IS NULL, session_date DESC
       `;
     } catch {
       sessions = [];

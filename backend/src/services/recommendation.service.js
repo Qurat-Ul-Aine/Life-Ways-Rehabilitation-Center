@@ -1398,9 +1398,9 @@ async function findDoctorMatchNotesRow({ doctorId, patientId, analysisId }) {
   const rows = await prisma.$queryRaw`
     SELECT id, assessment_notes, treatment_notes, progress_notes, updated_at
     FROM doctor_match_notes
-    WHERE doctor_id = ${did}::uuid
-      AND patient_id = ${pid}::uuid
-      AND analysis_id = ${aid}::uuid
+    WHERE doctor_id = ${did}
+      AND patient_id = ${pid}
+      AND analysis_id = ${aid}
     LIMIT 1
   `;
 
@@ -1469,13 +1469,14 @@ async function saveDoctorMatchNotesRow({
         treatment_notes = ${nextTreatment},
         progress_notes = ${nextProgress},
         updated_at = NOW()
-      WHERE doctor_id = ${did}::uuid
-        AND patient_id = ${pid}::uuid
-        AND analysis_id = ${aid}::uuid
+      WHERE doctor_id = ${did}
+        AND patient_id = ${pid}
+        AND analysis_id = ${aid}
     `;
   } else {
     await prisma.$executeRaw`
       INSERT INTO doctor_match_notes (
+        id,
         doctor_id,
         patient_id,
         analysis_id,
@@ -1485,9 +1486,10 @@ async function saveDoctorMatchNotesRow({
         updated_at
       )
       VALUES (
-        ${did}::uuid,
-        ${pid}::uuid,
-        ${aid}::uuid,
+        UUID(),
+        ${did},
+        ${pid},
+        ${aid},
         ${nextAssessment},
         ${nextTreatment},
         ${nextProgress},
