@@ -1,6 +1,11 @@
 const { PrismaClient } = require("../../generated/prisma-client");
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  transactionOptions: {
+    maxWait: 20000,
+    timeout: 60000,
+  },
+});
 
 const REQUIRED_MODELS = [
   "hospital_settings",
