@@ -985,14 +985,14 @@ async function getDashboardSummary(req, res) {
           id: `task-notif-${n.id}`,
           type: "medication",
           label: msg,
-          dueLabel: formatAppointmentTime(n.sent_date?.split("T")[1]) ?? "",
+          dueLabel: formatAppointmentTime(new Date(n.sent_date).toISOString().split("T")[1]) ?? "",
         });
       } else if (/session|appointment|therapy/i.test(msg)) {
         upcomingTasks.push({
           id: `task-notif-${n.id}`,
           type: "session",
           label: msg,
-          dueLabel: formatAppointmentTime(n.sent_date?.split("T")[1]) ?? "",
+          dueLabel: formatAppointmentTime(new Date(n.sent_date).toISOString().split("T")[1]) ?? "",
         });
       }
     });
