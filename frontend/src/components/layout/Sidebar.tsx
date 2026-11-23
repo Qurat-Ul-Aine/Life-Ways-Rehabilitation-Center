@@ -5,6 +5,7 @@ import {
   UserCog,
   CalendarDays,
   HeartPulse,
+  Images,
   ClipboardList,
   AlertTriangle,
   BarChart3,
@@ -81,6 +82,7 @@ const navByRole: Record<Role, NavSection[]> = {
         { label: "Reports", to: "/admin/reports", icon: FileText },
         { label: "Internship", to: "/admin/internship", icon: GraduationCap },
         { label: "Notifications", to: "/admin/notifications", icon: Bell },
+        { label: "Gallery", to: "/admin/gallery", icon: Images },
         { label: "Settings", to: "/admin/dashboard/settings", icon: Settings },
       ],
     },
@@ -194,7 +196,7 @@ export default function Sidebar({ onNavigate, collapsed = false }: SidebarProps)
                   <NavLink
                     className={({ isActive }) =>
                       cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 max-lg:min-h-11",
                         collapsed && "justify-center px-2",
                         isActive
                           ? "bg-primary text-primary-foreground shadow-sm"

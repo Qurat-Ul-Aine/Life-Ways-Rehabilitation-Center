@@ -39,7 +39,7 @@ export default function InternshipsPage() {
             <Badge variant="secondary" className="mb-4">
               Internship & Training Program
             </Badge>
-            <h1 className="font-heading text-4xl font-bold md:text-5xl">
+            <h1 className="font-heading text-3xl font-bold sm:text-4xl md:text-5xl">
               Clinical Internships at Life Ways
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">

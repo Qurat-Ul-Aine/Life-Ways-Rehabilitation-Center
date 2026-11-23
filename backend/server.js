@@ -22,6 +22,7 @@ const { therapyRoutes }        = require("./src/routes/therapy.routes");
 const { notificationRoutes }   = require("./src/routes/notification.routes");
 const { doctorRoutes }         = require("./src/routes/doctor.routes");
 const { serviceRoutes }        = require("./src/routes/service.routes");
+const galleryRoutes            = require("./src/routes/gallery.routes");
 const { recommendationRoutes } = require("./src/routes/recommendation.routes");
 const { messageRoutes }        = require("./src/routes/message.routes");
 const { prescriptionRoutes }   = require("./src/routes/prescription.routes");
@@ -82,6 +83,7 @@ const api = express.Router();
 api.use("/auth",      authRoutes);
 api.use("/doctors",   doctorRoutes);
 api.use("/services",  serviceRoutes);
+api.use("/gallery",   galleryRoutes);
 api.use("/interns",   internPublicRoutes);
 api.use("/screening", screeningRoutes);
 

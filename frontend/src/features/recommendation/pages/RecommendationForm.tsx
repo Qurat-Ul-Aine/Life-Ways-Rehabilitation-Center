@@ -157,7 +157,7 @@ export default function RecommendationForm() {
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">
             AI-Powered Matching
           </span>
-          <h1 className="mt-3 mb-4 text-4xl font-bold md:text-5xl">Find My Doctor</h1>
+          <h1 className="mt-3 mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">Find My Doctor</h1>
           <p className="mx-auto max-w-2xl text-muted-foreground">
             Complete a short two-step assessment so we can match you with the right rehabilitation
             specialist at Life Ways.

@@ -283,7 +283,7 @@ export default function PatientList() {
   );
 
   return (
-    <div className="bg-muted/30 min-h-screen p-4">
+    <div className="bg-muted/30 min-h-dvh p-4">
       <PageHeader
         eyebrow="Patient records"
         title={isDoctor ? "Assigned Patients" : "Patients & portal accounts"}

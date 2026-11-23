@@ -25,7 +25,7 @@ const ServiceDetail = () => {
   const Icon = service.icon;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-dvh">
       {/* Hero Banner */}
       <section className="bg-hero-gradient py-20 md:py-28">
         <div className="container mx-auto px-4">

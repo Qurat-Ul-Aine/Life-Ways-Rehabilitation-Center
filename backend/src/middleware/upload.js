@@ -155,6 +155,31 @@ const doctorImageUpload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
 });
 
+const galleryImageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "lifeways/gallery",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+  },
+});
+
+const galleryImageUpload = multer({
+  storage: galleryImageStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter(_req, file, cb) {
+    const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
+    const allowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
+    const extension = path.extname(file.originalname).toLowerCase();
+    if (!allowedMimeTypes.includes(file.mimetype) || !allowedExtensions.includes(extension)) {
+      const error = new Error("Only JPEG, PNG, or WebP images are allowed.");
+      error.code = "INVALID_IMAGE_TYPE";
+      cb(error);
+      return;
+    }
+    cb(null, true);
+  },
+});
+
 function adminAvatarStorage() {
   return multer.diskStorage({
     destination(_req, _file, cb) {
@@ -212,6 +237,7 @@ module.exports = {
   patientImageUpload,
   generalUpload,
   doctorImageUpload,
+  galleryImageUpload,
   adminImageUpload,
   hospitalLogoUpload,
 };

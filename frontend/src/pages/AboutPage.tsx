@@ -15,7 +15,7 @@ const AboutPage = () => {
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <span className="text-sm font-semibold text-primary uppercase tracking-wider">About Us</span>
-            <h1 className="text-4xl md:text-5xl font-bold font-heading mt-3 mb-6">
+            <h1 className="mt-3 mb-6 text-3xl font-bold font-heading sm:text-4xl md:text-5xl">
               {hospitalName}
             </h1>
             <p className="max-w-2xl mx-auto text-muted-foreground text-lg leading-relaxed">
@@ -116,7 +116,7 @@ const AboutPage = () => {
       {/* Stats */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { num: "500+", label: "Patients Treated" },
               { num: "15+", label: "Expert Therapists" },
@@ -162,7 +162,7 @@ const AboutPage = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-primary rounded-2xl p-12 md:p-16 text-center"
+            className="bg-primary rounded-2xl p-6 sm:p-10 md:p-16 text-center"
           >
             <Heart className="w-12 h-12 text-primary-foreground mx-auto mb-6 opacity-80" />
             <h2 className="text-3xl md:text-4xl font-bold font-heading text-primary-foreground mb-4">

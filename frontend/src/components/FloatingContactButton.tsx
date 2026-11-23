@@ -34,7 +34,7 @@ export default function FloatingContactButton() {
       onClick={handleClick}
       aria-label="Contact us"
       className={cn(
-        "fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full",
+        "fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full sm:right-6",
         "bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
       )}

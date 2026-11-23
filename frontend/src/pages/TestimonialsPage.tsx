@@ -26,11 +26,11 @@ const TestimonialsPage = () => {
   const prev = () => setActive((a) => (a - 1 + testimonials.length) % testimonials.length);
 
   return (
-    <div className="py-20">
+    <div className="py-12 sm:py-20">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-sm font-semibold text-primary uppercase tracking-wider">Testimonials</span>
-          <h1 className="text-4xl md:text-5xl font-heading font-bold mt-2 mb-4">Stories of Hope & Healing</h1>
+          <h1 className="mt-2 mb-4 text-3xl font-heading font-bold sm:text-4xl md:text-5xl">Stories of Hope & Healing</h1>
           <p className="text-muted-foreground">
             Hear from the patients and families whose lives have been transformed through compassionate care at Life Ways.
           </p>
@@ -38,8 +38,8 @@ const TestimonialsPage = () => {
 
         {/* Featured carousel */}
         <div className="relative max-w-3xl mx-auto mb-16">
-          <div className="bg-card border border-border rounded-2xl shadow-card p-8 md:p-12 text-center relative overflow-hidden">
-            <Quote className="absolute top-6 left-6 w-12 h-12 text-primary/10" />
+          <div className="bg-card border border-border rounded-2xl shadow-card p-5 sm:p-8 md:p-12 text-center relative overflow-hidden">
+            <Quote className="absolute top-4 left-4 h-8 w-8 text-primary/10 sm:left-6 sm:top-6 sm:h-12 sm:w-12" />
             <AnimatePresence mode="wait">
               <motion.div
                 key={featured.id}
@@ -61,14 +61,14 @@ const TestimonialsPage = () => {
           <button
             onClick={prev}
             aria-label="Previous"
-            className="absolute -left-2 md:-left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-card border border-border shadow-card hover:bg-primary hover:text-primary-foreground transition-colors"
+            className="absolute -left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card shadow-card transition-colors hover:bg-primary hover:text-primary-foreground md:-left-6"
           >
             <ChevronLeft size={20} />
           </button>
           <button
             onClick={next}
             aria-label="Next"
-            className="absolute -right-2 md:-right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-card border border-border shadow-card hover:bg-primary hover:text-primary-foreground transition-colors"
+            className="absolute -right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card shadow-card transition-colors hover:bg-primary hover:text-primary-foreground md:-right-6"
           >
             <ChevronRight size={20} />
           </button>

@@ -129,7 +129,7 @@ export default function WaitingRoomPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-dvh flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
           <p className="mt-2 text-sm text-muted-foreground">Loading waiting room...</p>
@@ -140,7 +140,7 @@ export default function WaitingRoomPage() {
 
   if (status === "error" || !appointment) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-dvh flex items-center justify-center bg-gray-50">
         <Card className="max-w-md w-full mx-4">
           <CardContent className="p-6 text-center">
             <p className="text-sm text-destructive mb-4">Could not load waiting room</p>
@@ -155,7 +155,7 @@ export default function WaitingRoomPage() {
 
   if (status === "too_early" || !joinState.canJoin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <div className="min-h-dvh flex items-center justify-center bg-gray-50 p-4">
         <Card className="max-w-lg w-full">
           <CardHeader>
             <CardTitle className="text-xl">Telehealth not open yet</CardTitle>
@@ -183,7 +183,7 @@ export default function WaitingRoomPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-dvh flex items-center justify-center bg-gray-50 p-4">
       <Card className="max-w-lg w-full">
         <CardHeader className="relative">
           <Button

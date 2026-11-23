@@ -150,7 +150,7 @@ const Sidebar = () => {
                       type="button"
                       onClick={() => navigate(target)}
                       className={cn(
-                        "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium transition-all duration-200",
+                        "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium transition-all duration-200 max-lg:py-3",
                         isActive
                           ? "bg-primary text-primary-foreground shadow-sm"
                           : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
@@ -195,7 +195,7 @@ const Sidebar = () => {
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-full gap-1.5 text-[11px] text-muted-foreground hover:text-foreground"
+          className="h-8 w-full gap-1.5 text-[11px] text-muted-foreground hover:text-foreground max-lg:h-11"
           onClick={() => navigate("/")}
         >
           <Home className="h-3.5 w-3.5" aria-hidden />
@@ -206,7 +206,7 @@ const Sidebar = () => {
             type="button"
             variant="ghost"
             size="sm"
-            className="h-7 flex-1 gap-1 text-[10px] text-muted-foreground hover:text-foreground"
+            className="h-7 flex-1 gap-1 text-[10px] text-muted-foreground hover:text-foreground max-lg:h-11"
             onClick={() => navigate("/patient/dashboard/settings")}
           >
             <Settings className="h-3 w-3" aria-hidden />
@@ -216,7 +216,7 @@ const Sidebar = () => {
             type="button"
             variant="outline"
             size="sm"
-            className="h-7 flex-1 gap-1 text-[10px]"
+            className="h-7 flex-1 gap-1 text-[10px] max-lg:h-11"
             onClick={logout}
           >
             <LogOut className="h-3 w-3" aria-hidden />

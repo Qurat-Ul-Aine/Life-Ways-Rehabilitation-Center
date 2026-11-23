@@ -88,7 +88,7 @@ export default function DoctorLayout() {
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
-            <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-20 xl:pb-0">
+            <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-20 lg:pb-0">
               <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-5 md:px-8">
                 <Breadcrumb className="mb-4" />
 

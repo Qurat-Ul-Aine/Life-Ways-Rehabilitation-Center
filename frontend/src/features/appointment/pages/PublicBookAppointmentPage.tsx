@@ -36,7 +36,7 @@ export default function PublicBookAppointmentPage() {
   }, [doctorId]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <div className="container mx-auto max-w-4xl px-4 py-10">
         <Link
           to="/"
@@ -47,7 +47,7 @@ export default function PublicBookAppointmentPage() {
 
         <div className="mb-8">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">Schedule</span>
-          <h1 className="mt-2 text-3xl font-bold">Book Your Appointment</h1>
+          <h1 className="mt-2 text-2xl font-bold sm:text-3xl">Book Your Appointment</h1>
           <p className="mt-2 text-muted-foreground">
             Choose a date and time to schedule your visit. No account required.
           </p>

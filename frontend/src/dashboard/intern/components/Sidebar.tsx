@@ -112,7 +112,7 @@ export default function Sidebar() {
                       type="button"
                       onClick={() => navigate(item.path)}
                       className={cn(
-                        "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium transition-all duration-200",
+                        "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium transition-all duration-200 max-lg:py-3",
                         isActive
                           ? "bg-primary text-primary-foreground shadow-sm"
                           : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
@@ -147,7 +147,7 @@ export default function Sidebar() {
             type="button"
             variant="ghost"
             size="sm"
-            className="h-7 flex-1 gap-1 text-[10px] text-muted-foreground hover:text-foreground"
+            className="h-7 flex-1 gap-1 text-[10px] text-muted-foreground hover:text-foreground max-lg:h-11"
           >
             <Settings className="h-3 w-3" aria-hidden />
             Settings
@@ -156,7 +156,7 @@ export default function Sidebar() {
             type="button"
             variant="outline"
             size="sm"
-            className="h-7 flex-1 gap-1 text-[10px]"
+            className="h-7 flex-1 gap-1 text-[10px] max-lg:h-11"
             onClick={handleLogout}
           >
             <LogOut className="h-3 w-3" aria-hidden />

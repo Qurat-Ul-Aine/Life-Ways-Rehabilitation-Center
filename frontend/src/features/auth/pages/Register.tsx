@@ -120,7 +120,7 @@ const Register = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-muted/40">
+    <div className="flex min-h-dvh items-center justify-center p-4 bg-muted/40">
       <Card className="w-full max-w-lg shadow-xl border-border/60">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
@@ -157,9 +157,9 @@ const Register = () => {
               ) : null}
 
               {/* Basic Info */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <FormField control={form.control} name="name" render={({ field }) => (
-                  <FormItem className="col-span-2">
+                  <FormItem className="sm:col-span-2">
                     <FormLabel>Full Name *</FormLabel>
                     <FormControl><Input placeholder="Enter your full name" {...field} /></FormControl>
                     <FormMessage />

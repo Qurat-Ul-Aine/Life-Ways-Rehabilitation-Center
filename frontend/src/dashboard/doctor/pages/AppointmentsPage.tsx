@@ -545,7 +545,7 @@ export default function AppointmentsPage() {
   if (contextLoading || (loading && !error)) {
     return (
       <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
             <Card key={index} className="rounded-2xl border-border bg-card shadow-sm">
               <CardContent className="p-4">
@@ -580,7 +580,7 @@ export default function AppointmentsPage() {
   return (
     <div className="space-y-4">
       {/* Statistics */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Total Appointments", value: stats.total },
           { label: "Today's Appointments", value: stats.today },

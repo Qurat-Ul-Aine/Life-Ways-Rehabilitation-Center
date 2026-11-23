@@ -114,7 +114,7 @@ const AppLayout = () => {
   return (
     <div
       className={`flex flex-col ${
-        isPatientDashboard || isTelehealthSession ? "h-dvh overflow-hidden" : "min-h-screen"
+        isPatientDashboard || isTelehealthSession ? "h-dvh overflow-hidden" : "min-h-dvh"
       }`}
     >
       {/* Skip to main content — accessibility */}

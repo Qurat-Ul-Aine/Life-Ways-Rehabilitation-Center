@@ -80,20 +80,20 @@ const DoctorProfilePage = () => {
                 <div className="mb-4" />
               )}
 
-              <div className="grid sm:grid-cols-2 gap-3 mb-7 max-w-xl">
+              <div className="grid grid-cols-1 gap-3 mb-7 max-w-xl sm:grid-cols-2">
                 {[
                   { icon: Award, label: "Experience", value: `${doctor.experienceYears}+ years` },
                   { icon: Users, label: "Patients Treated", value: `${doctor.patientsTreated}+` },
                   { icon: TrendingUp, label: "Success Rate", value: `${doctor.successRate}%` },
                   { icon: Wallet, label: "Consultation Fee", value: `PKR ${doctor.consultationFee.toLocaleString()}` },
                 ].map((s) => (
-                  <div key={s.label} className="bg-card rounded-xl p-4 border border-border flex items-center gap-3">
+                  <div key={s.label} className="min-w-0 bg-card rounded-xl p-4 border border-border flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                       <s.icon className="w-5 h-5 text-primary" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <div className="text-xs text-muted-foreground">{s.label}</div>
-                      <div className="font-semibold text-sm">{s.value}</div>
+                      <div className="break-words font-semibold text-sm">{s.value}</div>
                     </div>
                   </div>
                 ))}
@@ -104,7 +104,7 @@ const DoctorProfilePage = () => {
                   <BadgeCheck className="w-3.5 h-3.5" />
                   {doctor.available ? "Available Today" : "Currently Unavailable"}
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                <span className="inline-flex min-w-0 items-center gap-1.5 break-words text-sm text-muted-foreground">
                   <MapPin className="w-4 h-4" /> {doctor.location}
                 </span>
               </div>

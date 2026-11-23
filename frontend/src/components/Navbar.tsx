@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X, ChevronDown, ClipboardCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -9,10 +9,12 @@ import { getUserHomeRoute } from "@/lib/roleHelpers";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useHospitalContact } from "@/features/admin/hooks/useHospitalContact";
 
+type DropdownKey = "services" | "care-support";
+
 type NavLinkType = {
   label: string;
   href?: string;
-  dropdown?: "services" | "care-support";
+  dropdown?: DropdownKey;
 };
 
 type DropdownLink = {
@@ -39,6 +41,7 @@ const careSupportLinks: DropdownLink[] = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [mobileSection, setMobileSection] = useState<DropdownKey | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
@@ -51,6 +54,27 @@ const Navbar = () => {
   const currentReturnPath = `${location.pathname}${location.hash}`;
   const patientLoginPath = buildLoginPath("/login/patient", currentReturnPath);
   const registerPath = buildLoginPath("/register", currentReturnPath);
+
+  // Close menu on route change
+  useEffect(() => {
+    setOpen(false);
+    setMobileSection(null);
+  }, [location.pathname, location.hash]);
+
+  // Lock page scroll while the mobile drawer is open, restoring prior styles on close.
+  useEffect(() => {
+    if (!open) return;
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    return () => {
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+    };
+  }, [open]);
 
   const handleNavClick = (href: string) => {
     setOpen(false);
@@ -67,14 +91,18 @@ const Navbar = () => {
     }
   };
 
-  const renderDropdownPanel = (type: "services" | "care-support", onItemClick?: () => void) => {
+  const renderDropdownPanel = (
+    type: DropdownKey,
+    onItemClick?: () => void,
+    mobile = false,
+  ) => {
     if (type === "services") {
       return services.map((s) => (
         <li key={s.slug}>
           <Link
             to={`/services/${s.slug}`}
             onClick={onItemClick}
-            className="block px-4 py-2.5 text-sm hover:bg-muted transition-colors"
+            className={`block px-4 ${mobile ? "py-3" : "py-2.5"} text-sm hover:bg-muted transition-colors`}
           >
             {s.title}
           </Link>
@@ -87,7 +115,7 @@ const Navbar = () => {
         <Link
           to={item.href}
           onClick={onItemClick}
-          className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-muted transition-colors"
+          className={`flex items-center gap-2 px-4 ${mobile ? "py-3" : "py-2.5"} text-sm hover:bg-muted transition-colors`}
         >
           {item.icon && <span className="text-primary">{item.icon}</span>}
           {item.label}
@@ -96,60 +124,25 @@ const Navbar = () => {
     ));
   };
 
-  const renderMobileDropdown = (type: "services" | "care-support", label: string) => (
-    <>
-      <button
-        onClick={() => type === "services" && handleNavClick("/#services")}
-        className="block w-full text-left px-4 py-3 text-sm font-medium hover:bg-muted transition-colors"
-      >
-        {label}
-      </button>
-      <ul className="pl-4 border-l border-border ml-4 mb-2">
-        {type === "services"
-          ? services.map((s) => (
-              <li key={s.slug}>
-                <Link
-                  to={`/services/${s.slug}`}
-                  onClick={() => setOpen(false)}
-                  className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {s.title}
-                </Link>
-              </li>
-            ))
-          : careSupportLinks.map((item) => (
-              <li key={item.href}>
-                <Link
-                  to={item.href}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {item.icon && <span className="text-primary">{item.icon}</span>}
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-      </ul>
-    </>
-  );
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card/85 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto flex items-center justify-between py-3 px-4">
-        <Link to="/" className="flex items-center gap-2 shrink-0">
+      <div className="container mx-auto flex items-center justify-between gap-2 py-3 px-4">
+        {/* Logo + full brand name (never shortened) */}
+        <Link to="/" className="flex min-w-0 items-center gap-2">
           <img
             src={logoUrl}
             alt={`${hospitalName} logo`}
             width={40}
             height={40}
-            className="rounded-md object-contain"
+            className="h-10 w-10 shrink-0 rounded-md object-contain"
           />
-          <span className="text-xl font-bold font-heading text-heading hidden sm:inline">{brandLabel}</span>
-          <span className="text-lg font-bold font-heading text-heading sm:hidden">{brandLabel.split(" ")[0]}</span>
+          <span className="whitespace-nowrap text-base font-bold font-heading text-heading sm:text-xl">
+            {brandLabel}
+          </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <ul className="hidden md:flex items-center gap-6">
+        {/* Desktop Navigation (lg and up) */}
+        <ul className="hidden lg:flex items-center gap-4 xl:gap-6">
           {navLinks.map((l) => (
             <li key={l.label} className={l.dropdown ? "relative group py-4" : "py-4"}>
               {l.dropdown ? (
@@ -177,11 +170,11 @@ const Navbar = () => {
         </ul>
 
         {/* Desktop Auth Buttons */}
-        <div className="hidden md:flex items-center gap-2 lg:gap-3 shrink-0">
+        <div className="hidden lg:flex items-center gap-2 xl:gap-3 shrink-0">
           <ThemeToggle />
           <Link
             to="/appointments/book"
-            className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity lg:px-4 lg:py-2.5 lg:text-sm whitespace-nowrap"
+            className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity xl:px-4 xl:py-2.5 xl:text-sm whitespace-nowrap"
           >
             Book Appointment
           </Link>
@@ -189,13 +182,13 @@ const Navbar = () => {
             <>
               <Link
                 to={patientLoginPath}
-                className="px-3 py-2 rounded-lg border border-border text-xs font-semibold hover:bg-muted transition-colors lg:px-4 lg:py-2.5 lg:text-sm"
+                className="px-3 py-2 rounded-lg border border-border text-xs font-semibold hover:bg-muted transition-colors xl:px-4 xl:py-2.5 xl:text-sm"
               >
                 Login
               </Link>
               <Link
                 to={registerPath}
-                className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity lg:px-4 lg:py-2.5 lg:text-sm"
+                className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity xl:px-4 xl:py-2.5 xl:text-sm whitespace-nowrap"
               >
                 Sign up
               </Link>
@@ -205,7 +198,7 @@ const Navbar = () => {
               {isPatientFamily && (
                 <Link
                   to="/patient/dashboard/home"
-                  className="px-3 py-2 rounded-lg border border-border text-xs font-semibold hover:bg-muted transition-colors lg:px-4 lg:py-2.5 lg:text-sm"
+                  className="px-3 py-2 rounded-lg border border-border text-xs font-semibold hover:bg-muted transition-colors xl:px-4 xl:py-2.5 xl:text-sm whitespace-nowrap"
                 >
                   My Dashboard
                 </Link>
@@ -213,14 +206,14 @@ const Navbar = () => {
               {user && ["admin", "doctor", "staff"].includes(user.role) && (
                 <Link
                   to={dashboardPath}
-                  className="px-3 py-2 rounded-lg border border-border text-xs font-semibold hover:bg-muted transition-colors lg:px-4 lg:py-2.5 lg:text-sm"
+                  className="px-3 py-2 rounded-lg border border-border text-xs font-semibold hover:bg-muted transition-colors xl:px-4 xl:py-2.5 xl:text-sm"
                 >
                   Dashboard
                 </Link>
               )}
               <button
                 onClick={logout}
-                className="px-3 py-2 rounded-lg text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors lg:px-4 lg:py-2.5 lg:text-sm"
+                className="px-3 py-2 rounded-lg text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors xl:px-4 xl:py-2.5 xl:text-sm"
               >
                 Logout
               </button>
@@ -228,109 +221,130 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Menu Toggle */}
-        <div className="flex items-center gap-2 md:hidden">
-          <ThemeToggle />
-          <button onClick={() => setOpen(!open)} aria-label="Toggle menu">
+        {/* Mobile / tablet: theme + hamburger */}
+        <div className="flex shrink-0 items-center gap-2 lg:hidden">
+          <ThemeToggle className="h-11 w-11" />
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle menu"
+            aria-expanded={open}
+            className="flex h-11 w-11 items-center justify-center rounded-lg hover:bg-muted"
+          >
             {open ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
+      {/* Mobile / tablet drawer */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-border bg-card overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute left-0 right-0 top-full flex h-[calc(100dvh-65px)] max-h-[calc(100dvh-65px)] flex-col border-t border-border bg-card lg:hidden"
           >
-            <ul className="py-4 space-y-1">
-              {navLinks.map((l) => (
-                <li key={l.label}>
-                  {l.dropdown ? (
-                    renderMobileDropdown(l.dropdown, l.label)
-                  ) : (
-                    <button
-                      onClick={() => l.href && handleNavClick(l.href)}
-                      className="flex items-center gap-2 w-full text-left px-4 py-3 text-sm font-medium hover:bg-muted transition-colors"
-                    >
-                      {l.label}
-                    </button>
-                  )}
-                </li>
-              ))}
-              <li className="px-4 py-2">
-                <Link
-                  to="/appointments/book"
-                  onClick={() => setOpen(false)}
-                  className="block w-full px-4 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-semibold text-center hover:opacity-90 transition-opacity"
-                >
-                  Book Appointment
-                </Link>
-              </li>
-              <li className="px-4 py-2">
-                <ThemeToggle variant="compact" className="w-full justify-center" />
-              </li>
-              {!isAuthenticated ? (
-                <>
-                  <li>
-                    <Link
-                      to={patientLoginPath}
-                      onClick={() => setOpen(false)}
-                      className="block w-full mt-2 px-4 py-3 rounded-lg border border-border text-sm font-semibold text-center hover:bg-muted transition-colors"
-                    >
-                      Login
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to={registerPath}
-                      onClick={() => setOpen(false)}
-                      className="block w-full px-4 py-3 mt-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold text-center hover:opacity-90 transition-opacity"
-                    >
-                      Sign up
-                    </Link>
-                  </li>
-                </>
-              ) : (
-                <>
-                  {isPatientFamily && (
-                    <li>
-                      <Link
-                        to="/patient/dashboard/home"
-                        onClick={() => setOpen(false)}
-                        className="block w-full mt-2 px-4 py-3 rounded-lg border border-border text-sm font-semibold text-center hover:bg-muted transition-colors"
+            {/* Scrollable links */}
+            <div className="flex-1 overflow-y-auto overscroll-contain px-2 py-3">
+              <ul className="space-y-1">
+                {navLinks.map((l) => (
+                  <li key={l.label}>
+                    {l.dropdown ? (
+                      <>
+                        <button
+                          onClick={() =>
+                            setMobileSection((current) =>
+                              current === l.dropdown ? null : l.dropdown ?? null,
+                            )
+                          }
+                          aria-expanded={mobileSection === l.dropdown}
+                          className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-base font-medium hover:bg-muted"
+                        >
+                          {l.label}
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform ${
+                              mobileSection === l.dropdown ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+                        {mobileSection === l.dropdown && (
+                          <ul className="mb-2 ml-4 mt-1 border-l border-border pl-2">
+                            {renderDropdownPanel(l.dropdown, () => setOpen(false), true)}
+                          </ul>
+                        )}
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => l.href && handleNavClick(l.href)}
+                        className="block w-full rounded-lg px-4 py-3 text-left text-base font-medium hover:bg-muted"
                       >
-                        My Dashboard
-                      </Link>
-                    </li>
+                        {l.label}
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Sticky actions (always visible) */}
+            <div className="space-y-2 border-t border-border bg-card p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+              <Link
+                to="/appointments/book"
+                onClick={() => setOpen(false)}
+                className="block w-full rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-primary-foreground"
+              >
+                Book Appointment
+              </Link>
+
+              {!isAuthenticated ? (
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    to={patientLoginPath}
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg border border-border px-4 py-3 text-center text-sm font-semibold hover:bg-muted"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to={registerPath}
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-primary-foreground"
+                  >
+                    Sign up
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  {isPatientFamily && (
+                    <Link
+                      to="/patient/dashboard/home"
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg border border-border px-4 py-3 text-center text-sm font-semibold hover:bg-muted"
+                    >
+                      My Dashboard
+                    </Link>
                   )}
                   {user && ["admin", "doctor", "staff"].includes(user.role) && (
-                    <li>
-                      <Link
-                        to={dashboardPath}
-                        onClick={() => setOpen(false)}
-                        className="block w-full mt-2 px-4 py-3 rounded-lg border border-border text-sm font-semibold text-center hover:bg-muted transition-colors"
-                      >
-                        Dashboard
-                      </Link>
-                    </li>
-                  )}
-                  <li>
-                    <button
-                      onClick={() => {
-                        setOpen(false);
-                        logout();
-                      }}
-                      className="block w-full mt-2 px-4 py-3 text-sm font-semibold text-center text-muted-foreground hover:text-foreground transition-colors"
+                    <Link
+                      to={dashboardPath}
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg border border-border px-4 py-3 text-center text-sm font-semibold hover:bg-muted"
                     >
-                      Logout
-                    </button>
-                  </li>
-                </>
+                      Dashboard
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      setOpen(false);
+                      logout();
+                    }}
+                    className="rounded-lg px-4 py-3 text-center text-sm font-semibold text-muted-foreground hover:text-foreground"
+                  >
+                    Logout
+                  </button>
+                </div>
               )}
-            </ul>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

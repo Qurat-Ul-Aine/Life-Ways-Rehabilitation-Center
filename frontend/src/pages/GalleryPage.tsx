@@ -2,7 +2,9 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { galleryImages } from "@/data/gallery";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { galleryImages as fallbackGalleryImages, type GalleryImage } from "@/data/gallery";
 
 const categories = ["All", "Environment", "Therapy", "Facilities", "Activities"] as const;
 
@@ -10,14 +12,22 @@ const GalleryPage = () => {
   const [filter, setFilter] = useState<(typeof categories)[number]>("All");
   const [lightbox, setLightbox] = useState<string | null>(null);
 
+  const { data: remoteGallery } = useQuery({
+    queryKey: ["public-gallery"],
+    queryFn: async () => {
+      const { data } = await api.get<{ items: GalleryImage[] }>("/gallery");
+      return data.items;
+    },
+  });
+  const galleryImages = remoteGallery?.length ? remoteGallery : fallbackGalleryImages;
   const visible = filter === "All" ? galleryImages : galleryImages.filter((i) => i.category === filter);
 
   return (
-    <div className="py-20">
+    <div className="py-12 sm:py-20">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-sm font-semibold text-primary uppercase tracking-wider">Our Gallery</span>
-          <h1 className="text-4xl md:text-5xl font-heading font-bold mt-2 mb-4">A Glimpse Inside Life Ways</h1>
+          <h1 className="mt-2 mb-4 text-3xl font-heading font-bold sm:text-4xl md:text-5xl">A Glimpse Inside Life Ways</h1>
           <p className="text-muted-foreground">
             Step into our calm, supportive environment — where healing, therapy, and community come together.
           </p>
@@ -28,7 +38,7 @@ const GalleryPage = () => {
             <button
               key={c}
               onClick={() => setFilter(c)}
-              className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+              className={`min-h-11 px-4 py-2.5 rounded-full text-sm font-medium border transition-colors ${
                 filter === c
                   ? "bg-primary text-primary-foreground border-primary"
                   : "bg-card text-foreground border-border hover:border-primary"
@@ -54,6 +64,7 @@ const GalleryPage = () => {
                 src={img.src}
                 alt={img.alt}
                 loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-heading/80 via-heading/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
@@ -107,7 +118,8 @@ const GalleryPage = () => {
               exit={{ scale: 0.9 }}
               src={lightbox}
               alt="Preview"
-              className="max-w-full max-h-[90vh] rounded-lg shadow-card-hover"
+              decoding="async"
+              className="max-h-[90dvh] max-w-full rounded-lg object-contain shadow-card-hover"
               onClick={(e) => e.stopPropagation()}
             />
           </motion.div>

@@ -25,7 +25,7 @@ const TeamPage = () => {
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <span className="text-sm font-semibold text-primary uppercase tracking-wider">Our People</span>
-            <h1 className="text-4xl md:text-5xl font-bold font-heading mt-3 mb-6">Meet Our Team</h1>
+            <h1 className="mt-3 mb-6 text-3xl font-bold font-heading sm:text-4xl md:text-5xl">Meet Our Team</h1>
             <p className="max-w-2xl mx-auto text-muted-foreground text-lg leading-relaxed">
               Dedicated professionals committed to your recovery and well-being.
             </p>
@@ -62,7 +62,7 @@ const TeamPage = () => {
       {/* CTA */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="bg-card border border-border rounded-2xl p-8 md:p-12 text-center shadow-card max-w-4xl mx-auto">
+          <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 md:p-12 text-center shadow-card max-w-4xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-heading font-bold mb-3">Ready to Consult with Our Experts?</h2>
             <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
               Our team of dedicated professionals is here to guide you on your journey to recovery and wellness.

@@ -18,7 +18,7 @@ const STAT_CARDS = [
 export default function AdminNotificationStats({ stats, loading }: Props) {
   if (loading) {
     return (
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {[1, 2, 3, 4, 5].map((i) => (
           <div key={i} className="h-20 animate-pulse rounded-xl bg-muted" />
         ))}
@@ -27,7 +27,7 @@ export default function AdminNotificationStats({ stats, loading }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
       {STAT_CARDS.map(({ key, label, icon: Icon, color }) => (
         <Card key={key}>
           <CardContent className="flex items-center gap-3 p-4">

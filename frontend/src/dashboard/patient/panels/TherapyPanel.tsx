@@ -307,7 +307,7 @@ function TherapyPlanHero({ plan }: { plan: TherapyPlan }) {
           </p>
         )}
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+        <div className="grid grid-cols-1 gap-3 mb-5 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { label: "Start date", value: formatDate(started) },
             { label: "End date", value: formatDate(ends) },

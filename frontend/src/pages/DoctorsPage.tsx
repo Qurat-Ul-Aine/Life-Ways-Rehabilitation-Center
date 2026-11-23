@@ -34,7 +34,7 @@ const DoctorsPage = () => {
           <span className="text-sm font-semibold text-primary uppercase tracking-wider">
             Our Specialists
           </span>
-          <h1 className="text-4xl md:text-5xl font-bold mt-3 mb-4">
+          <h1 className="mt-3 mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">
             Find Your Doctor
           </h1>
           <p className="max-w-2xl mx-auto text-muted-foreground">
@@ -51,13 +51,13 @@ const DoctorsPage = () => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search by name..."
-                className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full min-w-0 pl-10 pr-3 py-2.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
             <select
               value={spec}
               onChange={(e) => setSpec(e.target.value)}
-              className="px-3 py-2.5 rounded-lg border border-border bg-background text-sm min-w-[150px]"
+              className="min-h-11 max-w-full px-3 py-2.5 rounded-lg border border-border bg-background text-sm min-w-[150px]"
             >
               {specs.map((s) => (
                 <option key={s}>{s}</option>

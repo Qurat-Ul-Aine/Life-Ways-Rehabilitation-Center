@@ -20,10 +20,10 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
   const logoUrl = resolveUploadUrl(hospital.logoUrl);
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-dvh bg-muted/30">
       <div className="flex">
         {/* Desktop sidebar */}
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-sidebar-border bg-sidebar lg:block">
+        <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 border-r border-sidebar-border bg-sidebar lg:block">
           <Sidebar />
         </aside>
 
@@ -56,6 +56,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
                 onClick={() => setMobileSidebarOpen(false)}
                 size="icon"
                 variant="ghost"
+                className="h-11 w-11"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -66,7 +67,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
           </aside>
         </div>
 
-        <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+        <div className="flex min-h-dvh min-w-0 flex-1 flex-col">
           <div className="border-b bg-background lg:hidden">
             <div className="flex items-center justify-between px-4 py-3">
               <Button
@@ -74,6 +75,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
                 onClick={() => setMobileSidebarOpen(true)}
                 size="icon"
                 variant="outline"
+                className="h-11 w-11"
               >
                 <Menu className="h-5 w-5" />
               </Button>
@@ -89,7 +91,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
                   {hospital.hospitalName}
                 </p>
               </div>
-              <ThemeToggle />
+              <ThemeToggle className="h-11 w-11" />
             </div>
           </div>
 

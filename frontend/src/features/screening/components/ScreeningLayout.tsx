@@ -15,7 +15,7 @@ export default function ScreeningLayout({ children, step, totalSteps, title }: P
   const progress = Math.round((step / totalSteps) * 100);
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10 text-foreground">
+    <div className="min-h-dvh bg-background px-4 py-10 text-foreground">
       <div className="mx-auto max-w-3xl space-y-8">
         <div className="flex items-center justify-between">
           <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">

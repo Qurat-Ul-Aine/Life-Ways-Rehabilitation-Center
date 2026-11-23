@@ -264,7 +264,7 @@ function RecoveryHero({
               <p className="text-xs font-medium text-emerald-100/90 uppercase tracking-wide mb-1">
                 Overall
               </p>
-              <p className="text-5xl font-bold tabular-nums tracking-tight leading-none">
+              <p className="text-4xl font-bold tabular-nums tracking-tight leading-none sm:text-5xl">
                 {recoveryPct}%
               </p>
             </div>

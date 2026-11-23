@@ -179,6 +179,18 @@ model feedback {
   patients      patients? @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+model gallery_images {
+  id           Int      @id @default(autoincrement())
+  image_url    String   @db.VarChar(500)
+  public_id    String   @unique @db.VarChar(255)
+  alt_text     String   @db.VarChar(255)
+  category     String   @db.VarChar(50)
+  sort_order   Int      @default(0)
+  is_published Boolean  @default(true)
+  created_at   DateTime @default(now()) @db.DateTime(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.DateTime(6)
+}
+
 model internee_degrees {
   id             Int        @id @default(autoincrement())
   internee_id    String?    @db.VarChar(36)

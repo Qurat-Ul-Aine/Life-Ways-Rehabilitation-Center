@@ -153,7 +153,7 @@ const Login = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
+    <div className="flex min-h-dvh items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-md shadow-xl border-border/60">
         <CardContent className="px-8 pb-8">
           {loginMode.path === "/login/patient" ? (

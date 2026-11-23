@@ -28,6 +28,7 @@ import TherapyReports from "@/features/therapy/pages/TherapyReports";
 import AdminMedicationsPage from "@/features/admin/pages/AdminMedicationsPage";
 import InternshipPanel from "@/dashboard/admin/panels/InternshipPanel";
 import AdminSettingsPage from "@/features/admin/pages/AdminSettingsPage";
+import AdminGalleryPage from "@/features/admin/pages/AdminGalleryPage";
 import AdminProfilePage from "@/features/admin/pages/AdminProfilePage";
 import ScreeningPanel from "@/dashboard/admin/panels/ScreeningPanel";
 import HighRiskPatientsPanel from "@/dashboard/admin/panels/HighRiskPatientsPanel";
@@ -64,6 +65,7 @@ const adminRoutes = (
     <Route path="/admin/dashboard" element={adminPage(<AdminOverview />)} />
     <Route path="/admin/dashboard/profile" element={adminPage(<AdminProfilePage />)} />
     <Route path="/admin/dashboard/settings" element={adminPage(<AdminSettingsPage />)} />
+    <Route path="/admin/gallery" element={adminPage(<AdminGalleryPage />)} />
     <Route path="/admin/patients" element={adminPage(<PatientList />)} />
     <Route path="/admin/patients/new" element={adminPage(<AddPatient />)} />
     <Route path="/admin/patients/:id" element={adminPage(<PatientProfile />)} />

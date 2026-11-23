@@ -1,4 +1,4 @@
-import { Home, Video } from "lucide-react";
+import { Home, Menu, Video } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { TOPBAR } from "../data/topbar";
@@ -24,7 +24,7 @@ const formatTime12 = (time?: string | null) => {
   return `${hour}:${String(m ?? 0).padStart(2, "0")} ${period}`;
 };
 
-const Topbar = () => {
+const Topbar = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { data } = usePatientDashboard();
@@ -49,20 +49,32 @@ const Topbar = () => {
   };
 
   return (
-    <header className="z-30 flex shrink-0 items-center justify-between border-b border-border bg-card px-4 py-3 shadow-sm sm:px-6">
-      <div className="min-w-0">
-        <h1 className="truncate text-sm font-semibold text-foreground">
-          {TOPBAR[activeKey] ?? "Dashboard"}
-        </h1>
-        <p className="text-xs text-muted-foreground">{formatToday()}</p>
+    <header className="z-30 flex shrink-0 items-center justify-between gap-2 border-b border-border bg-card px-3 py-3 shadow-sm sm:px-6">
+      <div className="flex min-w-0 items-center gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-11 w-11 shrink-0 lg:hidden"
+          onClick={onMenuClick}
+          aria-label="Open navigation menu"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <div className="min-w-0">
+          <h1 className="truncate text-sm font-semibold text-foreground">
+            {TOPBAR[activeKey] ?? "Dashboard"}
+          </h1>
+          <p className="text-xs text-muted-foreground">{formatToday()}</p>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-1 sm:gap-2">
         <Button
           type="button"
           variant="outline"
           size="sm"
-          className="hidden h-8 gap-1.5 text-xs sm:inline-flex"
+          className="hidden h-11 gap-1.5 text-xs sm:inline-flex"
           onClick={() => navigate("/")}
         >
           <Home className="h-3.5 w-3.5" aria-hidden />
@@ -91,7 +103,7 @@ const Topbar = () => {
         {(canJoinTelehealth || nextAppt?.mode === "online") && (
           <Button
             size="sm"
-            className="h-8 gap-1.5 text-xs"
+            className="h-11 gap-1.5 text-xs"
             onClick={handleJoinTelehealth}
             disabled={!nextAppt?.meetingUrl}
           >
