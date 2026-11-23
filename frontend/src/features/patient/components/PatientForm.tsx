@@ -6,6 +6,16 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import {
+  getLocalTodayDate,
+  normalizeEmail,
+  normalizePersonName,
+  normalizePhone,
+  validateDateOfBirth,
+  validateEmail,
+  validatePersonName,
+  validatePhone,
+} from "@/lib/validation";
 import type { Patient, PatientCreatePayload } from "../patient.types";
 
 type Props = {
@@ -80,14 +90,22 @@ export default function PatientForm({ initial, submitLabel, loading, onSubmit }:
 
   const validate = () => {
     const next: Record<string, string> = {};
-    if (!String(form.fullName ?? "").trim()) next.fullName = "Full name is required.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(form.email ?? ""))) next.email = "Valid email is required.";
-    if (String(form.phone ?? "").trim().length < 7) next.phone = "Phone number is too short.";
+    const nameError = validatePersonName(form.fullName);
+    const emailError = validateEmail(form.email);
+    const phoneError = validatePhone(form.phone);
+    if (nameError) next.fullName = nameError;
+    if (emailError) next.email = emailError;
+    if (phoneError) next.phone = phoneError;
     if (!form.dateOfBirth) next.dateOfBirth = "Date of birth is required.";
+    else {
+      const dateError = validateDateOfBirth(form.dateOfBirth);
+      if (dateError) next.dateOfBirth = dateError;
+    }
     if (!form.admissionDate) next.admissionDate = "Admission date is required.";
     if (!String(form.address ?? "").trim()) next.address = "Address is required.";
     if (!String(form.emergencyContactName ?? "").trim()) next.emergencyContactName = "Required.";
-    if (String(form.emergencyContactPhone ?? "").trim().length < 7) next.emergencyContactPhone = "Required.";
+    const emergencyPhoneError = validatePhone(form.emergencyContactPhone);
+    if (emergencyPhoneError) next.emergencyContactPhone = emergencyPhoneError;
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -95,7 +113,13 @@ export default function PatientForm({ initial, submitLabel, loading, onSubmit }:
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    onSubmit(form);
+    onSubmit({
+      ...form,
+      fullName: normalizePersonName(form.fullName),
+      email: normalizeEmail(form.email),
+      phone: normalizePhone(form.phone),
+      emergencyContactPhone: normalizePhone(form.emergencyContactPhone),
+    });
   };
 
   return (
@@ -143,6 +167,7 @@ export default function PatientForm({ initial, submitLabel, loading, onSubmit }:
         <Input
           id="dateOfBirth"
           type="date"
+          max={getLocalTodayDate()}
           value={form.dateOfBirth?.slice(0, 10) ?? ""}
           onChange={(e) => update("dateOfBirth", e.target.value)}
         />

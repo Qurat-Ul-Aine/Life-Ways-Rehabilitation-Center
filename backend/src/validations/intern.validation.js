@@ -1,4 +1,13 @@
 const { sendError } = require("../utils/response");
+const {
+  normalizeEmail,
+  normalizePersonName,
+  normalizePhone,
+  validateDateOfBirth,
+  validateEmail,
+  validatePersonName,
+  validatePhone,
+} = require("./common.validation");
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -9,18 +18,19 @@ function isUuid(value) {
 
 function validateCreateIntern(body, { passwordRequired = false, requireCnic = false } = {}) {
   const errors = [];
-  const name = String(body?.name ?? "").trim();
-  const email = String(body?.email ?? "").trim().toLowerCase();
-  const phone = String(body?.phone ?? "").trim();
+  const name = normalizePersonName(body?.name);
+  const email = normalizeEmail(body?.email);
+  const phone = normalizePhone(body?.phone);
   const education = String(body?.education ?? body?.degree ?? "").trim();
   const department = String(body?.department ?? "").trim();
   const password = String(body?.password ?? "");
 
-  if (!name) errors.push("Name is required.");
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.push("Valid email is required.");
-  }
-  if (!phone || phone.length < 7) errors.push("Valid phone number is required.");
+  const nameError = validatePersonName(body?.name);
+  if (nameError) errors.push(nameError);
+  const emailError = validateEmail(body?.email);
+  if (emailError) errors.push(emailError);
+  const phoneError = validatePhone(body?.phone);
+  if (phoneError) errors.push(phoneError);
   if (!education) errors.push("Education/degree is required.");
   if (!department) errors.push("Department is required.");
   if (requireCnic && !String(body?.cnic ?? "").trim()) {
@@ -32,6 +42,10 @@ function validateCreateIntern(body, { passwordRequired = false, requireCnic = fa
   if (password && password.length < 8) {
     errors.push("Password must be at least 8 characters.");
   }
+
+  const dateOfBirth = body?.date_of_birth ?? body?.dateOfBirth;
+  const dateOfBirthError = validateDateOfBirth(dateOfBirth);
+  if (dateOfBirthError) errors.push(dateOfBirthError);
 
   if (body?.internship_start && isNaN(Date.parse(body.internship_start))) {
     errors.push("Invalid internship start date.");
@@ -53,7 +67,7 @@ function validateCreateIntern(body, { passwordRequired = false, requireCnic = fa
       university: body?.university ? String(body.university).trim() : undefined,
       degree: body?.degree ? String(body.degree).trim() : education,
       gender: body?.gender,
-      date_of_birth: body?.date_of_birth ?? body?.dateOfBirth,
+      date_of_birth: dateOfBirth,
       address: body?.address,
       cnic: body?.cnic,
       semester: body?.semester,
@@ -67,11 +81,26 @@ function validateCreateIntern(body, { passwordRequired = false, requireCnic = fa
 
 function validateUpdateIntern(body) {
   const errors = [];
-  if (body?.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(body.email))) {
-    errors.push("Valid email is required.");
+  body = body ?? {};
+  if (body?.name !== undefined) {
+    const error = validatePersonName(body.name);
+    if (error) errors.push(error);
+    else body.name = normalizePersonName(body.name);
   }
-  if (body?.phone && String(body.phone).trim().length < 7) {
-    errors.push("Valid phone number is required.");
+  if (body?.email !== undefined) {
+    const error = validateEmail(body.email);
+    if (error) errors.push(error);
+    else body.email = normalizeEmail(body.email);
+  }
+  if (body?.phone !== undefined) {
+    const error = validatePhone(body.phone);
+    if (error) errors.push(error);
+    else body.phone = normalizePhone(body.phone);
+  }
+  const dateOfBirth = body?.date_of_birth ?? body?.dateOfBirth;
+  if (dateOfBirth != null && String(dateOfBirth).trim()) {
+    const error = validateDateOfBirth(dateOfBirth);
+    if (error) errors.push(error);
   }
   if (body?.password && String(body.password).length < 8) {
     errors.push("Password must be at least 8 characters.");

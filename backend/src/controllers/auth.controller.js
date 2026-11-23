@@ -3,6 +3,15 @@ const prisma = require("../lib/prisma");
 const { signToken } = require("../utils/jwt");
 const { sendSuccess, sendError } = require("../utils/response");
 const { validatePassword } = require("../utils/passwordPolicy");
+const {
+  normalizeEmail,
+  normalizePersonName,
+  normalizePhone,
+  validateDateOfBirth,
+  validateEmail,
+  validatePersonName,
+  validatePhone,
+} = require("../validations/common.validation");
 const { hasPermission, normalizeRole, ROLES } = require("../policies/accessPolicy");
 const {
   GENERIC_FORGOT_MESSAGE,
@@ -53,6 +62,23 @@ async function register(req, res) {
       return sendError(res, 400, "Name, email and password are required.");
     }
 
+    const nameError = validatePersonName(name);
+    if (nameError) return sendError(res, 400, nameError);
+    const emailError = validateEmail(email);
+    if (emailError) return sendError(res, 400, emailError);
+    const phoneError = validatePhone(phone);
+    if (phoneError) return sendError(res, 400, phoneError);
+    const dateOfBirthError = validateDateOfBirth(dateOfBirth);
+    if (dateOfBirthError) return sendError(res, 400, dateOfBirthError);
+    if (emergencyContactPhone) {
+      const emergencyPhoneError = validatePhone(emergencyContactPhone);
+      if (emergencyPhoneError) return sendError(res, 400, emergencyPhoneError);
+    }
+
+    const normalizedName = normalizePersonName(name);
+    const normalizedEmail = normalizeEmail(email);
+    const normalizedPhone = normalizePhone(phone);
+
     try {
       validatePassword(password);
     } catch (err) {
@@ -64,8 +90,6 @@ async function register(req, res) {
       return sendError(res, 400, roleResult.message);
     }
     const storedRole = roleResult.role;
-
-    const normalizedEmail = String(email).trim().toLowerCase();
 
     const existing = await prisma.users.findUnique({
       where: { email: normalizedEmail },
@@ -79,7 +103,7 @@ async function register(req, res) {
     const user = await prisma.$transaction(async (tx) => {
       const created = await tx.users.create({
       data: {
-        name: String(name).trim(),
+        name: normalizedName,
         email: normalizedEmail,
         password: hash,
         role: storedRole,
@@ -88,7 +112,7 @@ async function register(req, res) {
 
       if (phone) {
         await tx.user_phones.create({
-          data: { user_id: created.id, phone: String(phone).trim() },
+          data: { user_id: created.id, phone: normalizedPhone },
         });
       }
 
@@ -109,7 +133,7 @@ async function register(req, res) {
               ? String(emergencyContactName).trim()
               : null,
             emergency_contact_phone: emergencyContactPhone
-              ? String(emergencyContactPhone).trim()
+              ? normalizePhone(emergencyContactPhone)
               : null,
             status: "active",
           },

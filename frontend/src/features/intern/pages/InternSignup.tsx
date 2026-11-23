@@ -5,6 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import InternForm from "../components/InternForm";
 import { internService } from "../services/internService";
 import { INTERN_AUTH, INTERNSHIPS_PUBLIC } from "../intern.routes";
+import {
+  normalizeEmail,
+  normalizePersonName,
+  normalizePhone,
+  validateDateOfBirth,
+  validateEmail,
+  validatePersonName,
+  validatePhone,
+} from "@/lib/validation";
 
 export default function InternSignup() {
   const navigate = useNavigate();
@@ -27,10 +36,25 @@ export default function InternSignup() {
             loading={loading}
             apiError={apiError}
             onSubmit={async (payload) => {
+              const validationError =
+                validatePersonName(payload.name) ??
+                validateEmail(payload.email) ??
+                validatePhone(payload.phone) ??
+                validateDateOfBirth(payload.dateOfBirth);
+              if (validationError) {
+                setApiError(validationError);
+                return;
+              }
+
               setLoading(true);
               setApiError("");
               try {
-                await internService.signup(payload);
+                await internService.signup({
+                  ...payload,
+                  name: normalizePersonName(payload.name),
+                  email: normalizeEmail(payload.email),
+                  phone: normalizePhone(payload.phone),
+                });
                 toast.success("Application submitted! You will be notified once approved.");
                 navigate(INTERN_AUTH.login);
               } catch (err) {

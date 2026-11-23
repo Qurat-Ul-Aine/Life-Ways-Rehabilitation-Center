@@ -18,6 +18,16 @@ import type { RegisterRole } from "../auth.types";
 import { isValidPassword, PASSWORD_POLICY_MESSAGE } from "../utils/passwordPolicy";
 import { buildLoginPath, sanitizeReturnTo } from "@/lib/authRedirect";
 import { useAuth } from "@/context/AuthContext";
+import {
+  getLocalTodayDate,
+  normalizeEmail,
+  normalizePersonName,
+  normalizePhone,
+  validateDateOfBirth,
+  validateEmail,
+  validatePersonName,
+  validatePhone,
+} from "@/lib/validation";
 
 type RegisterFormValues = {
   role: RegisterRole;
@@ -78,11 +88,31 @@ const Register = () => {
   const isFamilyRegistration = selectedRole === "family";
 
   const handleRegister = async (values: RegisterFormValues) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    form.clearErrors(["name", "email", "phone", "dateOfBirth", "emergencyContactPhone"]);
+    const errors = {
+      name: validatePersonName(values.name),
+      email: validateEmail(values.email),
+      phone: validatePhone(values.phone),
+      dateOfBirth: values.role === "patient" ? validateDateOfBirth(values.dateOfBirth) : null,
+      emergencyContactPhone:
+        values.role === "patient" && values.emergencyContactPhone.trim()
+          ? validatePhone(values.emergencyContactPhone)
+          : null,
+    };
+    if (errors.name) form.setError("name", { type: "manual", message: errors.name });
+    if (errors.email) form.setError("email", { type: "manual", message: errors.email });
+    if (errors.phone) form.setError("phone", { type: "manual", message: errors.phone });
+    if (errors.dateOfBirth) {
+      form.setError("dateOfBirth", { type: "manual", message: errors.dateOfBirth });
+    }
+    if (errors.emergencyContactPhone) {
+      form.setError("emergencyContactPhone", {
+        type: "manual",
+        message: errors.emergencyContactPhone,
+      });
+    }
+    if (Object.values(errors).some(Boolean)) return;
 
-    if (values.name.trim().length < 2) { toast.error("Name must be at least 2 characters."); return; }
-    if (!emailRegex.test(values.email.trim())) { toast.error("Please enter a valid email."); return; }
-    if (!values.phone.trim()) { toast.error("Phone number is required."); return; }
     if (!isValidPassword(values.password)) {
       toast.error(PASSWORD_POLICY_MESSAGE);
       return;
@@ -93,9 +123,9 @@ const Register = () => {
     try {
       const hasSecuritySetup = securityAnswers.every((a) => a.questionKey && a.answer.trim());
       await authService.register({
-        name: values.name.trim(),
-        email: values.email.trim().toLowerCase(),
-        phone: values.phone.trim(),
+        name: normalizePersonName(values.name),
+        email: normalizeEmail(values.email),
+        phone: normalizePhone(values.phone),
         password: values.password,
         role: values.role,
         ...(values.role === "patient"
@@ -104,7 +134,9 @@ const Register = () => {
               dateOfBirth: values.dateOfBirth || undefined,
               address: values.address.trim() || undefined,
               emergencyContactName: values.emergencyContactName.trim() || undefined,
-              emergencyContactPhone: values.emergencyContactPhone.trim() || undefined,
+              emergencyContactPhone: values.emergencyContactPhone.trim()
+                ? normalizePhone(values.emergencyContactPhone)
+                : undefined,
             }
           : {}),
         ...(hasSecuritySetup ? { securityQuestions: securityAnswers } : {}),
@@ -204,7 +236,7 @@ const Register = () => {
                     <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
                       <FormItem>
                         <FormLabel>Date of Birth</FormLabel>
-                        <FormControl><Input type="date" {...field} /></FormControl>
+                        <FormControl><Input type="date" max={getLocalTodayDate()} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )} />

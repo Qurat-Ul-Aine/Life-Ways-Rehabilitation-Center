@@ -29,6 +29,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/AuthContext";
 import { resolveUploadUrl } from "@/lib/mediaUrl";
+import {
+  getLocalTodayDate,
+  normalizePersonName,
+  normalizePhone,
+  validateDateOfBirth,
+  validatePersonName,
+  validatePhone,
+} from "@/lib/validation";
 import { patientService, type PatientMeProfile, type PatientProfileUpdate } from "@/features/patient/services/patientService";
 import { usePatientContext } from "../hooks/usePatientContext";
 
@@ -79,7 +87,7 @@ const toForm = (profile: PatientMeProfile): ProfileForm => ({
 const buildPayload = (draft: ProfileForm, snapshot: ProfileForm): PatientProfileUpdate => {
   const payload: PatientProfileUpdate = {};
   if (draft.fullName !== snapshot.fullName) payload.name = draft.fullName.trim();
-  if (draft.phone !== snapshot.phone) payload.phone = draft.phone.trim();
+  if (draft.phone !== snapshot.phone) payload.phone = draft.phone.trim() || null;
   if (draft.gender !== snapshot.gender) payload.gender = draft.gender || null;
   if (draft.dateOfBirth !== snapshot.dateOfBirth) payload.dateOfBirth = draft.dateOfBirth || null;
   if (draft.nationality !== snapshot.nationality) payload.nationality = draft.nationality.trim() || null;
@@ -212,6 +220,26 @@ export default function ProfilePanel() {
       toast.info("No changes to save.");
       setIsEditing(false);
       return;
+    }
+
+    const validationErrors = [
+      payload.name !== undefined ? validatePersonName(payload.name) : null,
+      payload.phone ? validatePhone(payload.phone) : null,
+      payload.dateOfBirth ? validateDateOfBirth(payload.dateOfBirth) : null,
+      payload.emergencyContactPhone
+        ? validatePhone(payload.emergencyContactPhone)
+        : null,
+    ];
+    const validationError = validationErrors.find(Boolean);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
+    if (payload.name !== undefined) payload.name = normalizePersonName(payload.name);
+    if (payload.phone) payload.phone = normalizePhone(payload.phone);
+    if (payload.emergencyContactPhone) {
+      payload.emergencyContactPhone = normalizePhone(payload.emergencyContactPhone);
     }
 
     setIsSaving(true);
@@ -464,6 +492,7 @@ export default function ProfilePanel() {
                     <Input
                       id="dob"
                       type="date"
+                      max={getLocalTodayDate()}
                       value={draft.dateOfBirth}
                       onChange={(e) => setDraft((d) => (d ? { ...d, dateOfBirth: e.target.value } : d))}
                     />

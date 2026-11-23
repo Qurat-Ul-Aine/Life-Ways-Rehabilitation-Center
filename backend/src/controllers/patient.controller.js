@@ -11,6 +11,15 @@ const { assertApprovedActiveDoctor } = require("../utils/doctorApproval");
 const { buildPatientDocumentPdf } = require("../utils/pdfGenerator");
 const { markMissedAppointments } = require("../services/appointmentMissed.service");
 const {
+  normalizeEmail,
+  normalizePersonName,
+  normalizePhone,
+  validateDateOfBirth,
+  validateEmail,
+  validatePersonName,
+  validatePhone,
+} = require("../validations/common.validation");
+const {
   localCalendarDate,
   isStartingSoon,
   ACTIVE_REMINDER_STATUSES,
@@ -18,6 +27,49 @@ const {
 const { findActiveTherapyPlansForPatient, buildSessionWriteData, persistTherapySessionRow } = require("../services/therapySessionNotes.service");
 
 const parseId = (raw) => (isNaN(Number(raw)) ? String(raw) : Number(raw));
+
+function validatePatientInputFields(body, { requireNameEmail = false } = {}) {
+  const data = { ...body };
+  const fieldsToValidate = [
+    ["name", validatePersonName, normalizePersonName],
+    ["email", validateEmail, normalizeEmail],
+  ];
+
+  for (const [field, validate, normalize] of fieldsToValidate) {
+    if (requireNameEmail || body[field] !== undefined) {
+      const error = validate(body[field]);
+      if (error) return { error, data };
+      data[field] = normalize(body[field]);
+    }
+  }
+
+  if (body.phone !== undefined) {
+    if (body.phone == null) {
+      data.phone = "";
+    } else {
+      const error = validatePhone(body.phone);
+      if (error) return { error, data };
+      data.phone = normalizePhone(body.phone);
+    }
+  }
+
+  if (body.dateOfBirth !== undefined && body.dateOfBirth != null && String(body.dateOfBirth).trim()) {
+    const error = validateDateOfBirth(body.dateOfBirth);
+    if (error) return { error, data };
+  }
+
+  if (body.emergencyContactPhone !== undefined) {
+    if (body.emergencyContactPhone == null) {
+      data.emergencyContactPhone = null;
+    } else {
+      const error = validatePhone(body.emergencyContactPhone);
+      if (error) return { error, data };
+      data.emergencyContactPhone = normalizePhone(body.emergencyContactPhone);
+    }
+  }
+
+  return { error: null, data };
+}
 
 // ─── CHANGE 1: mapPatient now accepts precomputed extras ──────────────────────
 function computeAgeFromDob(dateOfBirth) {
@@ -582,6 +634,12 @@ async function getMe(req, res) {
 }
 
 async function applyPatientProfileFields(tx, patientRow, body) {
+  const validation = validatePatientInputFields(body ?? {});
+  if (validation.error) {
+    throw Object.assign(new Error(validation.error), { status: 400 });
+  }
+  body = validation.data;
+
   const {
     name,
     phone,
@@ -710,6 +768,9 @@ async function patchMe(req, res) {
 
     return res.json({ success: true, data: mapPatient(updated) });
   } catch (e) {
+    if (e.status === 400) {
+      return res.status(400).json({ success: false, message: e.message });
+    }
     if (e.code === "P2002") {
       return res.status(409).json({ success: false, message: "Email already in use." });
     }
@@ -1659,17 +1720,17 @@ async function getRecoverySummary(req, res) {
 // ─── POST /patients ───────────────────────────────────────────────────────────
 async function create(req, res) {
   try {
+    const validation = validatePatientInputFields(req.body ?? {}, { requireNameEmail: true });
+    if (validation.error) {
+      return res.status(400).json({ success: false, message: validation.error });
+    }
     const {
       name, email, gender, nationality, condition,
       phone, address, dateOfBirth, admissionDate,
       emergencyContactName, emergencyContactPhone, status,
-    } = req.body ?? {};
+    } = validation.data;
 
-    if (!name || !email) {
-      return res.status(400).json({ success: false, message: "Name and email are required." });
-    }
-
-    const normalizedEmail = String(email).trim().toLowerCase();
+    const normalizedEmail = email;
 
     const existing = await prisma.users.findFirst({ where: { email: normalizedEmail } });
     if (existing) {
@@ -1679,7 +1740,7 @@ async function create(req, res) {
     const patient = await prisma.$transaction(async (tx) => {
       const user = await tx.users.create({
         data: {
-          name: String(name).trim(),
+          name,
           email: normalizedEmail,
           password: "",
           role: "PATIENT",
@@ -1688,7 +1749,7 @@ async function create(req, res) {
 
       if (phone) {
         await tx.user_phones.create({
-          data: { user_id: user.id, phone: String(phone).trim() },
+          data: { user_id: user.id, phone },
         });
       }
 
@@ -1737,11 +1798,15 @@ async function create(req, res) {
 // ─── PUT /patients/:id ────────────────────────────────────────────────────────
 async function updatePut(req, res) {
   try {
+    const validation = validatePatientInputFields(req.body ?? {});
+    if (validation.error) {
+      return res.status(400).json({ success: false, message: validation.error });
+    }
     const {
       name, email, gender, nationality, condition,
       phone, address, dateOfBirth, admissionDate,
       emergencyContactName, emergencyContactPhone, status,
-    } = req.body ?? {};
+    } = validation.data;
 
     const patientId = parseId(req.params.id);
 
@@ -1751,17 +1816,17 @@ async function updatePut(req, res) {
 
       if (name || email) {
         const updateData = {};
-        if (name) updateData.name = String(name).trim();
-        if (email) updateData.email = String(email).trim().toLowerCase();
+        if (name) updateData.name = name;
+        if (email) updateData.email = email;
         await tx.users.update({ where: { id: existing.user_id }, data: updateData });
       }
 
       if (phone) {
         const existingPhone = await tx.user_phones.findFirst({ where: { user_id: existing.user_id } });
         if (existingPhone) {
-          await tx.user_phones.update({ where: { id: existingPhone.id }, data: { phone: String(phone).trim() } });
+          await tx.user_phones.update({ where: { id: existingPhone.id }, data: { phone } });
         } else {
-          await tx.user_phones.create({ data: { user_id: existing.user_id, phone: String(phone).trim() } });
+          await tx.user_phones.create({ data: { user_id: existing.user_id, phone } });
         }
       }
 
@@ -1815,11 +1880,15 @@ async function updatePut(req, res) {
 // ─── PATCH /patients/:id ──────────────────────────────────────────────────────
 async function updatePatch(req, res) {
   try {
+    const validation = validatePatientInputFields(req.body ?? {});
+    if (validation.error) {
+      return res.status(400).json({ success: false, message: validation.error });
+    }
     const {
       name, email, gender, nationality, condition,
       phone, address, dateOfBirth, admissionDate,
       emergencyContactName, emergencyContactPhone, status,
-    } = req.body ?? {};
+    } = validation.data;
 
     const patientId = parseId(req.params.id);
 
@@ -1829,17 +1898,17 @@ async function updatePatch(req, res) {
 
       if (name || email) {
         const updateData = {};
-        if (name) updateData.name = String(name).trim();
-        if (email) updateData.email = String(email).trim().toLowerCase();
+        if (name) updateData.name = name;
+        if (email) updateData.email = email;
         await tx.users.update({ where: { id: existing.user_id }, data: updateData });
       }
 
       if (phone) {
         const existingPhone = await tx.user_phones.findFirst({ where: { user_id: existing.user_id } });
         if (existingPhone) {
-          await tx.user_phones.update({ where: { id: existingPhone.id }, data: { phone: String(phone).trim() } });
+          await tx.user_phones.update({ where: { id: existingPhone.id }, data: { phone } });
         } else {
-          await tx.user_phones.create({ data: { user_id: existing.user_id, phone: String(phone).trim() } });
+          await tx.user_phones.create({ data: { user_id: existing.user_id, phone } });
         }
       }
 

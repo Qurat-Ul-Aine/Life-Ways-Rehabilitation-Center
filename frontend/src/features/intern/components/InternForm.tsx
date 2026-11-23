@@ -9,6 +9,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  getLocalTodayDate,
+  normalizeEmail,
+  normalizePersonName,
+  normalizePhone,
+  validateDateOfBirth,
+  validateEmail,
+  validatePersonName,
+  validatePhone,
+} from "@/lib/validation";
 import type { Intern, InternCreatePayload } from "../intern.types";
 import { INTERN_DEPARTMENTS } from "../intern.types";
 
@@ -22,7 +32,7 @@ type Props = {
   onSubmit: (payload: InternCreatePayload) => void;
 };
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = getLocalTodayDate;
 
 const emptyForm = (): InternCreatePayload => ({
   name: "",
@@ -111,11 +121,14 @@ export default function InternForm({
 
   const validate = () => {
     const next: Record<string, string> = {};
-    if (!String(form.name).trim()) next.name = "Full name is required.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(form.email))) {
-      next.email = "Valid email is required.";
-    }
-    if (String(form.phone).trim().length < 7) next.phone = "Valid phone number is required.";
+    const nameError = validatePersonName(form.name);
+    const emailError = validateEmail(form.email);
+    const phoneError = validatePhone(form.phone);
+    const dateOfBirthError = validateDateOfBirth(form.dateOfBirth);
+    if (nameError) next.name = nameError;
+    if (emailError) next.email = emailError;
+    if (phoneError) next.phone = phoneError;
+    if (dateOfBirthError) next.dateOfBirth = dateOfBirthError;
     if (!String(form.education).trim()) next.education = "Education is required.";
     if (!String(form.department).trim()) next.department = "Department is required.";
     if (requireCnic && !String(form.cnic).trim()) next.cnic = "CNIC is required.";
@@ -129,7 +142,12 @@ export default function InternForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    onSubmit(form);
+    onSubmit({
+      ...form,
+      name: normalizePersonName(form.name),
+      email: normalizeEmail(form.email),
+      phone: normalizePhone(form.phone),
+    });
   };
 
   return (
@@ -230,6 +248,7 @@ export default function InternForm({
         <Input
           id="dateOfBirth"
           type="date"
+          max={getLocalTodayDate()}
           value={form.dateOfBirth ?? ""}
           onChange={(e) => update("dateOfBirth", e.target.value)}
         />
